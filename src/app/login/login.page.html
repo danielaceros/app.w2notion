@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Signup
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Signup</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <div>
+  <form [formGroup]="myForm">
+  <ion-item lines="none" color="light" class="rowStyle">
+    <ion-input labelPlacement="floating" [clearInput]="true" label="Email" type="email" required 
+    formControlName="email" formGroupName="password" [(ngModel)]="email">
+    </ion-input>
+  </ion-item>
+  <ion-item lines="none" color="light" class="rowStyle">
+    <ion-input minlength="6" labelPlacement="floating" [clearInput]="true" label="Password" type="password" required  
+    formControlName="password" formGroupName="password" [(ngModel)]="password">
+    </ion-input>
+  </ion-item>
+  </form>
+  </div>
+  <ion-button id="open-loading" expand="full" shape="round" color="danger" (click)="signupUserWithEmailAndPassword()"><ion-icon name="log-in-outline"></ion-icon>Login</ion-button>
+  <ion-button expand="full" shape="round" color="danger" (click)="loginUserWithGoogle()"><i class="fa-brands fa-google fa-beat"></i>Login with Google</ion-button>
+  <ion-button expand="full" shape="round" color="danger" (click)="forgotpassword()"><ion-icon name="key-outline"></ion-icon>Change Password</ion-button>
+  <ion-loading trigger="open-loading" message="Getting ready..." duration="1000"></ion-loading>
+</ion-content>
