@@ -1,0 +1,7 @@
+{
+  "name": "W2Notion",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
