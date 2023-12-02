@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { Auth, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { Auth, RecaptchaVerifier, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
 import { 
   FormGroup,
   FormControl,
@@ -22,10 +22,12 @@ export class LoginPage implements OnInit {
   password: string = "";
   auth = getAuth();
   myForm:FormGroup;
+  captcha: RecaptchaVerifier;
+  code: string;
   constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController, private router: Router) {
     this.auth.onAuthStateChanged((user) => {
       if (user) {
-        this.router.navigate(['/loading'])
+        this.router.navigate(['/home'])
         
       } else {
         console.log("NOT LOGGED")
@@ -106,6 +108,24 @@ export class LoginPage implements OnInit {
     });
     await alert.present();
   }
+  async presentAlertCodeVerification(number:string) {
+    const alert = await this.alertController.create({
+      header: 'Code Verification',
+      message: "A code was sent to "+number,
+      inputs: [{
+        type: "text",
+        name: "code",
+        placeholder: "Code"
+      }],
+      buttons: [{
+        text: "Ok",
+        handler: (alertData) => {
+          this.code = alertData.code;
+        }
+      }],
+    });
+    await alert.present();
+  }
   async signupUserWithEmailAndPassword() {
     if(await this.isFormValid()){
     const user = await createUserWithEmailAndPassword(
@@ -161,9 +181,6 @@ export class LoginPage implements OnInit {
     .then((result) => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential?.accessToken;
-      this.http.get("https://api.emailx.es/v1/oauth?uid="+result.user.uid).subscribe((data) =>{
-        console.log(data)
-      })
       const user = result.user;
     }).catch((error) => {
       const errorCode = error.code;
@@ -180,5 +197,21 @@ export class LoginPage implements OnInit {
     }, () => {
     })
   }
-  
+  async loginUserWithPhone(){
+    const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
+    const user = await signInWithPhoneNumber(this.auth, "+34629819696", captcha)
+    .then(async (confirmationResult) => {
+      this.presentAlertCodeVerification("+34629819696")
+      confirmationResult.confirm(this.code).then( (result) => {
+        const user = result.user;
+        console.log(user)
+      }).catch((error) => {
+        console.log(error)
+      });
+    }).catch((error) => {
+      console.log(error)
+    });
+  }
+  async confirmcode(code:string){
+  }
 }

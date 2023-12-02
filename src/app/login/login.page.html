@@ -26,8 +26,10 @@
   </ion-item>
   </form>
   </div>
-  <ion-button id="open-loading" expand="full" shape="round" color="danger" (click)="signupUserWithEmailAndPassword()"><ion-icon name="log-in-outline"></ion-icon>Login</ion-button>
-  <ion-button expand="full" shape="round" color="danger" (click)="loginUserWithGoogle()"><i class="fa-brands fa-google fa-beat"></i>Login with Google</ion-button>
-  <ion-button expand="full" shape="round" color="danger" (click)="forgotpassword()"><ion-icon name="key-outline"></ion-icon>Change Password</ion-button>
+  <ion-button id="open-loading" expand="full" shape="round" (click)="signupUserWithEmailAndPassword()"><ion-icon name="log-in-outline"></ion-icon>Login</ion-button>
+  <ion-button expand="full" shape="round" (click)="loginUserWithGoogle()"><i class="fa-brands fa-google fa-beat"></i>Login with Google</ion-button>
+  <ion-button id="sign-in-button" expand="full" shape="round" (click)="loginUserWithPhone()" ><ion-icon name="key-outline"></ion-icon>Login with Phone</ion-button>
+  <ion-button expand="full" shape="round" (click)="forgotpassword()"><ion-icon name="key-outline"></ion-icon>Change Password</ion-button>
   <ion-loading trigger="open-loading" message="Getting ready..." duration="1000"></ion-loading>
+  <div id="recaptcha-container"></div>
 </ion-content>
