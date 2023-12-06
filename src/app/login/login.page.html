@@ -12,24 +12,25 @@
       <ion-title size="large">Signup</ion-title>
     </ion-toolbar>
   </ion-header>
-  <div>
-  <form [formGroup]="myForm">
-  <ion-item lines="none" color="light" class="rowStyle">
-    <ion-input labelPlacement="floating" [clearInput]="true" label="Email" type="email" required 
-    formControlName="email" formGroupName="password" [(ngModel)]="email">
-    </ion-input>
-  </ion-item>
-  <ion-item lines="none" color="light" class="rowStyle">
-    <ion-input minlength="6" labelPlacement="floating" [clearInput]="true" label="Password" type="password" required  
-    formControlName="password" formGroupName="password" [(ngModel)]="password">
-    </ion-input>
-  </ion-item>
-  </form>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div class="telefono-formulario">
+    <form (ngSubmit)="onSubmit()" class="example-form">
+      <ng-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCountry" class="custom" [items]="countries" bindLabel="nombre" bindValue="phone_code" [searchFn]="customSearchFn" clearAllText="Clear"> 
+        <ng-template ng-label-tmp let-item="item">
+            <span>{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
+              <span>{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
+        </ng-template>
+      </ng-select>
+      <ion-item>
+        <ion-input placeholder="Phone Number" type="tel" [ngModelOptions]="{standalone: true}" [(ngModel)]="phoneNumber" required></ion-input>
+      </ion-item>
+      <ion-button shape="round" color="primary" type="submit"><ion-icon name="person-circle-outline"></ion-icon>Login</ion-button>
+    </form>
   </div>
-  <ion-button id="open-loading" expand="full" shape="round" (click)="signupUserWithEmailAndPassword()"><ion-icon name="log-in-outline"></ion-icon>Login</ion-button>
-  <ion-button expand="full" shape="round" (click)="loginUserWithGoogle()"><i class="fa-brands fa-google fa-beat"></i>Login with Google</ion-button>
-  <ion-button id="sign-in-button" expand="full" shape="round" (click)="loginUserWithPhone()" ><ion-icon name="key-outline"></ion-icon>Login with Phone</ion-button>
-  <ion-button expand="full" shape="round" (click)="forgotpassword()"><ion-icon name="key-outline"></ion-icon>Change Password</ion-button>
   <ion-loading trigger="open-loading" message="Getting ready..." duration="1000"></ion-loading>
   <div id="recaptcha-container"></div>
 </ion-content>

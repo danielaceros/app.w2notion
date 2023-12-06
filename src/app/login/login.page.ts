@@ -10,6 +10,18 @@ import {
   FormBuilder, 
 } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { countries } from 'src/app/countries.module'
+import { countryCodeEmoji, emojiCountryCode } from 'country-code-emoji';
+
+
+type Country = {
+  nombre: string;
+  name: string;
+  nom: string;
+  iso2: string;
+  iso3: string;
+  phone_code: string;
+};
 
 @Component({
   selector: 'app-login',
@@ -24,6 +36,11 @@ export class LoginPage implements OnInit {
   myForm:FormGroup;
   captcha: RecaptchaVerifier;
   code: string;
+  selectedCountry: string = ""; 
+  phoneNumber: string = '';
+  countries: Country[] = countries
+  results: any;
+  data: any;
   constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController, private router: Router) {
     this.auth.onAuthStateChanged((user) => {
       if (user) {
@@ -34,11 +51,23 @@ export class LoginPage implements OnInit {
       }
     })
   }
+  customSearchFn(term: string, item: any) {
+    term = term.toLocaleLowerCase();
+    return item.phone_code.toLocaleLowerCase().indexOf(term) > -1 || item.nombre.toLocaleLowerCase().indexOf(term) > -1;
+   }
+  getcountryemoji(code: string){
+    return countryCodeEmoji(code);
+  }
   ngOnInit() {
     this.myForm = this.formBuilder.group({
       email: ['', Validators.compose([Validators.email, Validators.required])],
       password: ['', Validators.compose([Validators.minLength(6),  Validators.required])],
     })
+  }
+  onSubmit() {
+    const telefonoCompleto = `+${this.selectedCountry} ${this.phoneNumber}`;
+    console.log(telefonoCompleto)
+    this.loginUserWithPhone(telefonoCompleto)
   }
   async isFormValid(){
     if(this.myForm.valid){
@@ -111,7 +140,7 @@ export class LoginPage implements OnInit {
   async presentAlertCodeVerification(number:string) {
     const alert = await this.alertController.create({
       header: 'Code Verification',
-      message: "A code was sent to "+number,
+      message: "A code was sent to " + number,
       inputs: [{
         type: "text",
         name: "code",
@@ -125,6 +154,7 @@ export class LoginPage implements OnInit {
       }],
     });
     await alert.present();
+    await alert.onDidDismiss();
   }
   async signupUserWithEmailAndPassword() {
     if(await this.isFormValid()){
@@ -197,21 +227,23 @@ export class LoginPage implements OnInit {
     }, () => {
     })
   }
-  async loginUserWithPhone(){
+  async loginUserWithPhone(phonenumber: string){
     const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
-    const user = await signInWithPhoneNumber(this.auth, "+34629819696", captcha)
+    const user = await signInWithPhoneNumber(this.auth, phonenumber, captcha)
     .then(async (confirmationResult) => {
-      this.presentAlertCodeVerification("+34629819696")
-      confirmationResult.confirm(this.code).then( (result) => {
-        const user = result.user;
-        console.log(user)
-      }).catch((error) => {
-        console.log(error)
-      });
+      this.presentAlertCodeVerification(phonenumber).then( () => {
+        confirmationResult.confirm(this.code).then( (result) => {
+          const user = result.user;
+          console.log(user)
+        }).catch((error) => {
+          console.log(error)
+        });
+      })
     }).catch((error) => {
       console.log(error)
     });
   }
-  async confirmcode(code:string){
+  handleRefresh(event: { target: { complete: () => void; }; }) {
+    window.location.reload();
   }
 }

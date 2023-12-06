@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RefresherCustomEvent } from '@ionic/angular';
-import { UserMetadata, getAuth } from 'firebase/auth';
+import { AlertController, RefresherCustomEvent } from '@ionic/angular';
+import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from 'firebase/auth';
 
 @Component({
   selector: 'app-home',
@@ -21,21 +21,15 @@ export class HomePage {
   image: string | null;
   uid: string | null;
   myForm: FormGroup;
-  constructor(public http: HttpClient, public formBuilder: FormBuilder) {
+  code: string;
+  constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.myForm = this.formBuilder.group({
-      whphone: ['', Validators.compose([Validators.required])],
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
       dbid: ['', Validators.compose([Validators.minLength(32), Validators.maxLength(32), Validators.required])]
     })
     this.auth.onAuthStateChanged((user) => {
       if (user) {
-        this.user = user.displayName?.split(" ")[0],
-        this.username = user.displayName;
-        this.email = user.email;
-        this.emailp = user.email?.split("@")[0];
-        this.md = user.metadata;
         this.phone = user.phoneNumber
-        this.image = user.photoURL
         this.uid = user.uid
       } else {
         console.log("NOT LOGGED")
@@ -45,16 +39,51 @@ export class HomePage {
   ngOnInit(){
     
   }
+  async presentAlertCodeVerification(number:string) {
+    const alert = await this.alertController.create({
+      header: 'Code Verification',
+      message: "A code was sent to " + number,
+      inputs: [{
+        type: "text",
+        name: "code",
+        placeholder: "Code"
+      }],
+      buttons: [{
+        text: "Ok",
+        handler: (alertData) => {
+          this.code = alertData.code;
+        }
+      }],
+    });
+    await alert.present();
+    await alert.onDidDismiss();
+  }
   refresh(ev: any) {
     setTimeout(() => {
       (ev as RefresherCustomEvent).detail.complete();
     }, 3000);
   }
-  connect(){
+  async connect(){
     if(this.myForm.valid){
-      this.http.get("https://api.w2notion.es/v1/connect?whphone="+this.myForm.get("whphone")?.value+"&secret="+this.myForm.get("secret")?.value+"&dbid="+this.myForm.get("dbid")?.value).subscribe((data: any) =>{
-      })
+      const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
+      const user = await signInWithPhoneNumber(this.auth, this.phone!, captcha)
+      .then(async (confirmationResult) => {
+        this.presentAlertCodeVerification(this.phone!).then( () => {
+          confirmationResult.confirm(this.code).then( (result) => {
+            const user = result.user;
+            this.http.get("https://api.w2notion.es/v1/connect?whphone="+this.phone!+"&secret="+this.myForm.get("secret")?.value+"&dbid="+this.myForm.get("dbid")?.value).subscribe((data: any) =>{
+            })
+          }).catch((error) => {
+            console.log(error)
+          });
+        })
+      }).catch((error) => {
+        console.log(error)
+      });
     }
+  }
+  handleRefresh(event: { target: { complete: () => void; }; }) {
+    window.location.reload();
   }
   signout(){
     this.auth.signOut();

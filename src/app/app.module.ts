@@ -12,13 +12,14 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideFirebaseApp } from '@angular/fire/app';
 import { HttpClientModule } from '@angular/common/http';
 import { firebaseConfig } from 'src/config/firebase.config';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [HttpClientModule, BrowserModule, IonicModule.forRoot(), AppRoutingModule, provideFirebaseApp(() => initializeApp(firebaseConfig)), provideAuth(() => getAuth()),
+  imports: [BrowserAnimationsModule, HttpClientModule, BrowserModule, IonicModule.forRoot(), AppRoutingModule, provideFirebaseApp(() => initializeApp(firebaseConfig)), provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage())
     ],

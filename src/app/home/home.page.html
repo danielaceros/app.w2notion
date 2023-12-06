@@ -1,8 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      ¡Bienvenido! {{ user || emailp }}
+      ¡Bienvenido!, {{ phone }}
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="signout()"><ion-icon name="exit-outline"></ion-icon></ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -15,18 +18,20 @@
       </ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-card>
     <ion-card-header>
       <ion-card-title>Configura tu W2Notion</ion-card-title>
     </ion-card-header>
     <ion-card-content>
     <form [formGroup]="myForm">
-    <ion-input formControlName="whphone" labelPlacement="floating" [clearInput]="true" placeholder="34629819696" label="Phone, introduce el prefijo tal cual, seguido del número de teléfono" type="phone" required></ion-input>
-    <ion-input formControlName="secret" labelPlacement="floating" [clearInput]="true" placeholder="secret_m01YZ9I4ju7NHC9eG5uTU71e7dqPDktY69fgLyUCVIE" label="Introduce el Notion Secret" type="phone" required></ion-input>
-    <ion-input formControlName="dbid" labelPlacement="floating" [clearInput]="true" placeholder="e1bf230611fe4374a37c3561fb686b44" label="Introduce tu DB ID" type="phone" required></ion-input>
+    <ion-input formControlName="secret" labelPlacement="floating" [clearInput]="true" placeholder="secret_m01YZ9I4ju7NHC9eG5uTU71e7dqPDktY69fgLyUCVIE" label="Introduce el Notion Secret" type="password" required></ion-input>
+    <ion-input formControlName="dbid" labelPlacement="floating" [clearInput]="true" placeholder="e1bf230611fe4374a37c3561fb686b44" label="Introduce tu DB ID" type="password" required></ion-input>
     </form>
   </ion-card-content>
   </ion-card>
-  <ion-button  shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>Connect</ion-button>
-  <ion-button  shape="round" color="danger" expand="full" (click)="signout()"><ion-icon name="checkmark-done-outline"></ion-icon>Sign Out</ion-button>
+  <ion-button shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>Connect</ion-button>
+  <div id="recaptcha-container"></div>
 </ion-content>

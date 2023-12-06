@@ -5,6 +5,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IonicModule } from '@ionic/angular';
 import { LoginPageRoutingModule } from './login-routing.module';
 import { LoginPage } from './login.page';
+import { MaterialModule } from '../material.module';
+import { NgSelectModule } from '@ng-select/ng-select';
+
+
 
 @NgModule({
   imports: [
@@ -13,6 +17,8 @@ import { LoginPage } from './login.page';
     ReactiveFormsModule,
     IonicModule,
     LoginPageRoutingModule,
+    MaterialModule,
+    NgSelectModule
   ],
   declarations: [LoginPage]
 })

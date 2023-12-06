@@ -1,4 +1,25 @@
 @import "~@fortawesome/fontawesome-free/css/all.css";
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
+// styles.scss o tu-componente.page.scss
+// styles.scss o tu-componente.page.scss
+.ng-select.custom {
+  width: 80%;
+
+  background-color: #272727;
+  color: white;
+  margin-bottom: 3%;
+}
+.ng-select.custom .ng-select-container  {            
+  background-color: #272727;
+}
+.ng-select.custom ::ng-deep .ng-select-container  {            
+  background-color: #272727;
+  color: white;
+  border:0px;
+  min-height: 0px;
+  border-radius: 0;
+}
 
 ion-icon{
     margin-right:1%;
@@ -16,3 +37,55 @@ div{
     margin-top: 2%;
 }
 
+ion-icon{
+  margin-right:1%;
+}
+i{
+  margin-right: 1%;
+}
+div{
+  margin-bottom: 5%;
+  margin-top: 2%;
+}
+ion-button{
+  margin-left: 8%;
+  margin-right: 8%;
+  margin-bottom: 2%;
+}
+
+
+/* telefono-formulario.component.css */
+// tu-componente.page.scss
+.example-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; // O ajusta a la altura deseada
+
+  ion-item {
+    width: 100%;
+    max-width: 80%; // Ajusta el ancho máximo según tus preferencias
+    margin-bottom: 2%;
+
+    ion-label {
+      font-size: 14px;
+    }
+
+    ion-select {
+      font-size: 14px;
+    }
+
+    ion-input {
+      font-size: 14px;
+    }
+  }
+
+  ion-button {
+    width: 100%;
+    max-width: 80%; // Ajusta el ancho máximo según tus preferencias
+    margin-top: 2%;
+  }
+}
+
+  

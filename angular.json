@@ -31,7 +31,13 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss", "node_modules/@fortawesome/fontawesome-free/css/all.min.css"],
+            "styles": [
+              "@angular/material/prebuilt-themes/purple-green.css",
+              "src/theme/variables.scss",
+              "src/global.scss",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "@ng-select/ng-select/themes/default.theme.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -74,10 +80,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "app:build:production"
+              "browserTarget": "app:build:production"
             },
             "development": {
-              "buildTarget": "app:build:development"
+              "browserTarget": "app:build:development"
             },
             "ci": {
               "progress": false
@@ -111,7 +117,11 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss"],
+            "styles": [
+              "@angular/material/prebuilt-themes/purple-green.css",
+              "src/theme/variables.scss",
+              "src/global.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -136,7 +146,8 @@
   "cli": {
     "schematicCollections": [
       "@ionic/angular-toolkit"
-    ]
+    ],
+    "analytics": "88f7ce92-8421-488a-9aa0-2d2c10ac8d2f"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {
