@@ -7,6 +7,7 @@ import { LoginPageRoutingModule } from './login-routing.module';
 import { LoginPage } from './login.page';
 import { MaterialModule } from '../material.module';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { NgOtpInputModule } from 'ng-otp-input';
 
 
 
@@ -18,7 +19,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     IonicModule,
     LoginPageRoutingModule,
     MaterialModule,
-    NgSelectModule
+    NgSelectModule,
+    NgOtpInputModule,
   ],
   declarations: [LoginPage]
 })

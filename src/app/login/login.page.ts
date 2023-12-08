@@ -12,7 +12,10 @@ import {
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { countries } from 'src/app/countries.module'
 import { countryCodeEmoji, emojiCountryCode } from 'country-code-emoji';
-
+import { Errors } from "src/app/errors.page"
+import { ViewChildren, ElementRef } from '@angular/core';
+import { otpConfig } from 'src/config/otp.config'
+import { delay } from 'rxjs';
 
 type Country = {
   nombre: string;
@@ -41,6 +44,11 @@ export class LoginPage implements OnInit {
   countries: Country[] = countries
   results: any;
   data: any;
+  isCharging: boolean = false;
+  otpConfig: any = otpConfig;
+  isModalOpen: boolean = false;
+  otp: string = "";
+  isOTP6: boolean = false;
   constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController, private router: Router) {
     this.auth.onAuthStateChanged((user) => {
       if (user) {
@@ -50,6 +58,34 @@ export class LoginPage implements OnInit {
         console.log("NOT LOGGED")
       }
     })
+  }
+  async onOtpChange(event: any) {
+    this.otp = event;
+    console.log(this.otp)
+  }
+  checkOTP(){
+    return this.otp.length
+  }
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+  async getOTP(){
+    return new Promise<void>((resolve, reject) => {
+      const checkOtpInterval = setInterval(() => {
+        if (this.isOtpInputComplete()) {
+          clearInterval(checkOtpInterval);
+          resolve();
+        }
+      }, 100); // Intervalo de comprobación cada 100 ms
+    });
+  }
+  isOtpInputComplete(): boolean {
+    if(this.otp.length > 5){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
   customSearchFn(term: string, item: any) {
     term = term.toLocaleLowerCase();
@@ -65,8 +101,8 @@ export class LoginPage implements OnInit {
     })
   }
   onSubmit() {
+    this.isCharging = true;
     const telefonoCompleto = `+${this.selectedCountry} ${this.phoneNumber}`;
-    console.log(telefonoCompleto)
     this.loginUserWithPhone(telefonoCompleto)
   }
   async isFormValid(){
@@ -133,6 +169,14 @@ export class LoginPage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Weak Password',
       message: "You've entered a weak password, password needs to have 6 characters at least",
+      buttons: ['Dismiss'],
+    });
+    await alert.present();
+  }
+  async presentAlertFirebaseAuthError(errorMessage: string) {
+    const alert = await this.alertController.create({
+      header: 'Error during OTP',
+      message: errorMessage,
       buttons: ['Dismiss'],
     });
     await alert.present();
@@ -214,7 +258,6 @@ export class LoginPage implements OnInit {
       const user = result.user;
     }).catch((error) => {
       const errorCode = error.code;
-      const errorMessage = error.message;
       const email = error.customData.email;
       const credential = GoogleAuthProvider.credentialFromError(error);
       // ...
@@ -229,17 +272,25 @@ export class LoginPage implements OnInit {
   }
   async loginUserWithPhone(phonenumber: string){
     const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
+    this.isModalOpen = true;
     const user = await signInWithPhoneNumber(this.auth, phonenumber, captcha)
     .then(async (confirmationResult) => {
-      this.presentAlertCodeVerification(phonenumber).then( () => {
-        confirmationResult.confirm(this.code).then( (result) => {
+      this.getOTP().then( () => {
+        this.isModalOpen = false;
+        confirmationResult.confirm(this.otp).then( (result) => {
+          this.isCharging = false;
           const user = result.user;
-          console.log(user)
         }).catch((error) => {
+          new Errors(this.alertController).showErrors(error.code);
+          this.isModalOpen = false;
+          this.isCharging = false;
           console.log(error)
         });
       })
     }).catch((error) => {
+      new Errors(this.alertController).showErrors(error.code);
+      this.isModalOpen = false;
+      this.isCharging = false;
       console.log(error)
     });
   }

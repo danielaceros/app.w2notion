@@ -7,6 +7,7 @@
       <ion-button (click)="signout()"><ion-icon name="exit-outline"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <ion-progress-bar *ngIf="isCharging" type="indeterminate"></ion-progress-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
