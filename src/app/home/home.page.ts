@@ -4,6 +4,9 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { AlertController, RefresherCustomEvent } from '@ionic/angular';
 import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from 'firebase/auth';
+import { getStripePayments, createCheckoutSession } from "@invertase/firestore-stripe-payments";
+import { getApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 
 @Component({
   selector: 'app-home',
@@ -12,6 +15,8 @@ import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber
 })
 export class HomePage {
   auth = getAuth()
+  app = getApp()
+  db = getFirestore()
   user: string | undefined;
   username: string | null;
   email: string | null;
@@ -29,12 +34,23 @@ export class HomePage {
     })
     this.auth.onAuthStateChanged((user) => {
       if (user) {
+        console.log(this.db)
         this.phone = user.phoneNumber
         this.uid = user.uid
       } else {
         console.log("NOT LOGGED")
       }
     })
+  }
+  async suscribe(){
+    const payments = getStripePayments(getApp(), {
+      productsCollection: "products",
+      customersCollection: "customers",
+    });
+    const session = await createCheckoutSession(payments, {
+      price: "price_1OKKwfCBeUvmGnFOAI5M5hSk",
+    });
+    window.location.assign(session.url);
   }
   ngOnInit(){
     
