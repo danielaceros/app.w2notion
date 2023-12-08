@@ -1,6 +1,8 @@
 @import "~@fortawesome/fontawesome-free/css/all.css";
 @import "~@ng-select/ng-select/themes/default.theme.css";
-
+::ng-deep .each_input:focus{
+  border: 2px solid red!important;
+}
 // styles.scss o tu-componente.page.scss
 // styles.scss o tu-componente.page.scss
 .ng-select.custom {
