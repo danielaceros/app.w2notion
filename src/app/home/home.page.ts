@@ -13,6 +13,8 @@ import { DocumentData, addDoc, collection, doc, getDoc, getFirestore, onSnapshot
 })
 export class HomePage {
   auth = getAuth()
+  app = getApp()
+  db = getFirestore()
   user: string | undefined;
   username: string | null;
   email: string | null;
@@ -32,6 +34,7 @@ export class HomePage {
     })
     this.auth.onAuthStateChanged((user) => {
       if (user) {
+        console.log(this.db)
         this.phone = user.phoneNumber
         this.uid = user.uid
         document.querySelector("ion-progress-bar")
@@ -52,6 +55,16 @@ export class HomePage {
       }
     })
     
+  }
+  async suscribe(){
+    const payments = getStripePayments(getApp(), {
+      productsCollection: "products",
+      customersCollection: "customers",
+    });
+    const session = await createCheckoutSession(payments, {
+      price: "price_1OKKwfCBeUvmGnFOAI5M5hSk",
+    });
+    window.location.assign(session.url);
   }
   ngOnInit(){
     

@@ -19,7 +19,7 @@
     "@angular/common": "^17.0.0",
     "@angular/compiler": "^17.0.0",
     "@angular/core": "^17.0.0",
-    "@angular/fire": "^16.0.0",
+    "@angular/fire": "^17.0.0",
     "@angular/forms": "^17.0.0",
     "@angular/material": "^17.0.2",
     "@angular/platform-browser": "^17.0.0",
@@ -36,6 +36,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@googleapis/gmail": "^6.0.0",
+    "@invertase/firestore-stripe-payments": "^0.0.7",
     "@ionic-selectable/angular": "^5.0.0-alpha.19",
     "@ionic-selectable/core": "^5.0.0-alpha.19",
     "@ionic/angular": "^7.0.0",
@@ -85,5 +86,10 @@
     "ts-node": "^8.3.0",
     "typescript": "~5.2.0"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "overrides": {
+    "@firebase/app": "0.9.15",
+    "@firebase/auth": "1.1.0",
+    "@firebase/firestore": "4.1.0"
+  }
 }
