@@ -24,6 +24,19 @@
   </ion-refresher>
   <ion-card>
     <ion-card-header>
+      <ion-card-title>Tu suscripción, {{ phone }}</ion-card-title>
+    </ion-card-header>
+  <ion-card-content *ngIf="subscriptionData">
+    <ion-icon *ngIf="subscriptionData.status == 'active'" name="checkmark-circle"></ion-icon>
+    {{ startDate }} - {{ endDate }}<br>
+  </ion-card-content>
+  <ion-card-content *ngIf="!subscriptionData">
+    <ion-icon name="close-circle"></ion-icon>
+    You're not suscribed
+  </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="subscriptionData">
+    <ion-card-header>
       <ion-card-title>Configura tu W2Notion</ion-card-title>
     </ion-card-header>
     <ion-card-content>
@@ -33,7 +46,7 @@
     </form>
   </ion-card-content>
   </ion-card>
-  <ion-button shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>Connect</ion-button>
-  <ion-button color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="checkmark-done-outline"></ion-icon>Plans</ion-button>
+  <ion-button *ngIf="subscriptionData" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>Connect</ion-button>
+  <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>Suscribe</ion-button>
   <div id="recaptcha-container"></div>
 </ion-content>

@@ -49,24 +49,28 @@ export class LoginPage implements OnInit {
   isModalOpen: boolean = false;
   otp: string = "";
   isOTP6: boolean = false;
+  countryCodeEmoji: string;
+  isButtonDisabled: boolean = false;
+  countdown: number = 60;
   constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController, private router: Router) {
+    this.myForm = this.formBuilder.group({
+      phone: ['', Validators.compose([Validators.pattern('^[0-9]*$'),  Validators.required])],
+    })
     this.auth.onAuthStateChanged((user) => {
       if (user) {
         this.router.navigate(['/home'])
         
       } else {
-        console.log("NOT LOGGED")
       }
     })
   }
   async onOtpChange(event: any) {
     this.otp = event;
-    console.log(this.otp)
   }
-  checkOTP(){
+  async checkOTP(){
     return this.otp.length
   }
-  delay(ms: number) {
+  async delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
   }
   async getOTP(){
@@ -92,94 +96,17 @@ export class LoginPage implements OnInit {
     return item.phone_code.toLocaleLowerCase().indexOf(term) > -1 || item.nombre.toLocaleLowerCase().indexOf(term) > -1;
    }
   getcountryemoji(code: string){
-    return countryCodeEmoji(code);
+    this.countryCodeEmoji = countryCodeEmoji(code);
+    return this.countryCodeEmoji;
   }
   ngOnInit() {
-    this.myForm = this.formBuilder.group({
-      email: ['', Validators.compose([Validators.email, Validators.required])],
-      password: ['', Validators.compose([Validators.minLength(6),  Validators.required])],
-    })
+    
   }
-  onSubmit() {
+  async onSubmit() {
     this.isCharging = true;
     const telefonoCompleto = `+${this.selectedCountry} ${this.phoneNumber}`;
+    console.log(this.selectedCountry)
     this.loginUserWithPhone(telefonoCompleto)
-  }
-  async isFormValid(){
-    if(this.myForm.valid){
-      return true;
-    }
-    else if(this.myForm.get("password")?.hasError('minlength') && this.myForm.get("email")?.hasError('email')){
-      this.presentAlertMailAndPassword();
-      return false;
-    }
-    else if(this.myForm.get("password")?.hasError('minlength')){
-      this.presentAlertWeakPassword();
-      return false;
-    }
-    else if(this.myForm.get("email")?.hasError('email')){
-      this.presentAlertIsNotEmail();
-      return false;
-    }
-    else{
-      return null;
-    }
-  }
-  async presentAlertForgotPassword() {
-    const alert = await this.alertController.create({
-      header: 'Password Reset',
-      message: 'An email is sent to ('+this.email+") in order to change your password",
-      buttons: ['¡Perfect!'],
-    });
-    await alert.present();
-  }
-  async presentAlertIsNotEmail() {
-    const alert = await this.alertController.create({
-      header: 'Email Incorrect',
-      message: "The email that you've entered is incorrect",
-      buttons: ['Dismiss'],
-    });
-    await alert.present();
-  }
-  async presentAlertMailAndPassword() {
-    const alert = await this.alertController.create({
-      header: 'Email and Password Incorrect',
-      message: "The email and password that you've entered are incorrect",
-      buttons: ['Dismiss'],
-    });
-    await alert.present();
-  }
-  async presentAlertPasswordError() {
-    const alert = await this.alertController.create({
-      header: 'Incorrect User/Password',
-      message: "The user/password entered are incorrect",
-      buttons: ['Dismiss'],
-    });
-    await alert.present();
-  }
-  async presentAlertManyRequests() {
-    const alert = await this.alertController.create({
-      header: 'Many Requests',
-      message: "Try to login in a few minutes",
-      buttons: ['Dismiss'],
-    });
-    await alert.present();
-  }
-  async presentAlertWeakPassword() {
-    const alert = await this.alertController.create({
-      header: 'Weak Password',
-      message: "You've entered a weak password, password needs to have 6 characters at least",
-      buttons: ['Dismiss'],
-    });
-    await alert.present();
-  }
-  async presentAlertFirebaseAuthError(errorMessage: string) {
-    const alert = await this.alertController.create({
-      header: 'Error during OTP',
-      message: errorMessage,
-      buttons: ['Dismiss'],
-    });
-    await alert.present();
   }
   async presentAlertCodeVerification(number:string) {
     const alert = await this.alertController.create({
@@ -200,101 +127,77 @@ export class LoginPage implements OnInit {
     await alert.present();
     await alert.onDidDismiss();
   }
-  async signupUserWithEmailAndPassword() {
-    if(await this.isFormValid()){
-    const user = await createUserWithEmailAndPassword(
-      this.auth,
-      this.email = this.myForm.get('email')!.value,
-      this.password = this.myForm.get('password')!.value,
-      ).then((u) =>{
-
-      }).catch(error =>{
-        switch (error.code){
-          case 'auth/email-already-in-use':
-            this.loginUserWithEmailAndPassword()
-            break
-          case 'auth/weak-password':
-            this.presentAlertWeakPassword()
-            break
-          case 'auth/too-many-requests':
-            this.presentAlertManyRequests()
-            break
-          default:
-        }
-      })
-    return user;}
-  }
-  async loginUserWithEmailAndPassword() {
-    if(await this.isFormValid()){
-    const user = await signInWithEmailAndPassword(
-       this.auth,
-       this.email = this.myForm.get('email')!.value,
-       this.password = this.myForm.get('password')!.value,
-       ).then((u) =>{
-       }).catch(error =>{
-         console.log(error.code)
-         switch (error.code){
-            case 'auth/email-already-in-use':
-              break
-            case 'auth/invalid-login-credentials':
-              this.presentAlertPasswordError();
-              break
-            case 'auth/too-many-requests':
-              this.presentAlertManyRequests()
-              break
-            default:
-         }
-       })
-    return user;}
-  }
-  async loginUserWithGoogle(){
-    const provider = new GoogleAuthProvider();
-    provider.addScope('https://www.googleapis.com/auth/gmail.readonly');
-    const auth = getAuth();
-    const user = await signInWithPopup(auth, provider)
-    .then((result) => {
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential?.accessToken;
-      const user = result.user;
-    }).catch((error) => {
-      const errorCode = error.code;
-      const email = error.customData.email;
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
-    });
-    
-  }
-  async forgotpassword(){
-    this.presentAlertForgotPassword()
-    sendPasswordResetEmail(this.auth, this.myForm.get('email')!.value).then(() =>{
-    }, () => {
-    })
-  }
-  async loginUserWithPhone(phonenumber: string){
+  async resendOTP(phonenumber: string){
     const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
-    this.isModalOpen = true;
     const user = await signInWithPhoneNumber(this.auth, phonenumber, captcha)
     .then(async (confirmationResult) => {
+      this.isModalOpen = true;
       this.getOTP().then( () => {
         this.isModalOpen = false;
         confirmationResult.confirm(this.otp).then( (result) => {
           this.isCharging = false;
           const user = result.user;
         }).catch((error) => {
-          new Errors(this.alertController).showErrors(error.code);
           this.isModalOpen = false;
           this.isCharging = false;
-          console.log(error)
+          new Errors(this.alertController).showErrors(error.code);
         });
       })
     }).catch((error) => {
-      new Errors(this.alertController).showErrors(error.code);
       this.isModalOpen = false;
       this.isCharging = false;
-      console.log(error)
+      new Errors(this.alertController).showErrors(error.code);
+      
     });
   }
+  async OTPRefreshButton() {
+    this.isButtonDisabled = true;
+    setTimeout(() => {
+      this.isButtonDisabled = false;
+      this.countdown = 60; // Reiniciar el contador
+    }, 60000); // 60 segundos
+    this.startCountdown();
+  }
+  private startCountdown() {
+    const interval = setInterval(() => {
+      this.countdown--;
+
+      if (this.countdown <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000); // Actualizar cada segundo
+  }
+  async loginUserWithPhone(phonenumber: string){
+    if(this.myForm.valid){
+    const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
+    const user = await signInWithPhoneNumber(this.auth, phonenumber, captcha)
+    .then(async (confirmationResult) => {
+      this.isModalOpen = true;
+      this.getOTP().then( () => {
+        this.isModalOpen = false;
+        confirmationResult.confirm(this.otp).then( (result) => {
+          this.isCharging = false;
+          const user = result.user;
+        }).catch((error) => {
+          this.isModalOpen = false;
+          this.isCharging = false;
+          new Errors(this.alertController).showErrors(error.code);
+        });
+      })
+    }).catch((error) => {
+      this.isModalOpen = false;
+      this.isCharging = false;
+      new Errors(this.alertController).showErrors(error.code);
+      
+    });
+  }else{
+    new Errors(this.alertController).showErrors("auth/invalid-phone-number")
+  }
+}
   handleRefresh(event: { target: { complete: () => void; }; }) {
+    window.location.reload();
+  }
+  doRefresh() {
     window.location.reload();
   }
 }

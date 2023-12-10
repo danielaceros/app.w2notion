@@ -6,7 +6,14 @@ export class Errors{
     const alert = await this.alertController.create({
       header: 'Error',
       message: errorMessage,
-      buttons: ['OK'],
+      buttons: [
+        {
+          text: 'OK',
+          handler: () => {
+            window.location.reload();
+          },
+        },
+      ],
     });
     await alert.present();
   }

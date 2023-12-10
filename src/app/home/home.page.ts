@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, RefresherCustomEvent } from '@ionic/angular';
+import { AlertController, LoadingController, RefresherCustomEvent } from '@ionic/angular';
 import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from '@angular/fire/auth';
-import { DocumentData, addDoc, collection, doc, getDoc, getFirestore, onSnapshot, query, where } from '@angular/fire/firestore';
+import { DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-home',
@@ -25,14 +25,18 @@ export class HomePage {
   myForm: FormGroup;
   code: string;
   isCharging: boolean = false;
-  constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+  subscriptionData: Object | any;
+  startDate: string;
+  endDate: string;
+  stripeLink: string;
+  constructor(private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+    this.onCharge();
     this.myForm = this.formBuilder.group({
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
       dbid: ['', Validators.compose([Validators.minLength(32), Validators.maxLength(32), Validators.required])]
     })
     this.auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log(this.db)
         this.phone = user.phoneNumber
         this.uid = user.uid
         document.querySelector("ion-progress-bar")
@@ -43,7 +47,11 @@ export class HomePage {
         const unsubscribe = onSnapshot(subscriptionsQuery, (snapshot) => {
           const doc = snapshot.docs[0];
           if (doc) {
-            console.log(doc.id, ' => ', doc.data());
+            this.subscriptionData = doc.data();
+            this.startDate = new Date(doc.data()['current_period_start']['seconds'] * 1000).toDateString()
+            this.endDate = new Date(doc.data()['current_period_end']['seconds'] * 1000).toDateString()
+            this.stripeLink = doc.data()['stripeLink']
+            console.log(this.subscriptionData)
           } else {
             console.log('No hay suscripciones activas o en periodo de prueba.');
           }
@@ -54,10 +62,18 @@ export class HomePage {
     })
     
   }
-  ngOnInit(){
-    
+  async onCharge(){
+    const loading = this.loadingCtrl.create({
+      message: 'Setting everithing up...',
+      duration: 1000,
+    });
+
+    (await loading).present();
+  }
+  async ngOnInit(){
   }
   async payment(){
+    this.isCharging = true;
     const docRef = await addDoc(
       collection(this.db, 'customers', this.uid!, 'checkout_sessions'),
       {
@@ -66,7 +82,6 @@ export class HomePage {
         cancel_url: window.location.origin,
       }
     );
-    // Espera a que se adjunte el CheckoutSession por la extensión
     onSnapshot(docRef, (snap) => {
       const data = snap.data();
     
@@ -74,12 +89,10 @@ export class HomePage {
         const { error, url } = data as { error?: any; url?: string };
     
         if (error) {
-          // Muestra un error al cliente e inspecciona los registros de Cloud Function en la consola de Firebase.
           alert(`Ocurrió un error: ${error.message}`);
         }
     
         if (url) {
-          // Tenemos una URL de Stripe Checkout, redirijamos.
           window.location.assign(url);
         }
       }

@@ -26,3 +26,6 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 @import "~@ng-select/ng-select/themes/default.theme.css";
+:root {
+    --ion-backdrop-opacity: 1; /* Set your desired opacity value (0 to 1) */
+  }

@@ -17,7 +17,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <div class="telefono-formulario">
-    <form (ngSubmit)="onSubmit()" class="example-form">
+    <form (ngSubmit)="onSubmit()" [formGroup]="myForm" class="example-form">
       <ng-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCountry" class="custom" [items]="countries" bindLabel="nombre" bindValue="phone_code" [searchFn]="customSearchFn" clearAllText="Clear"> 
         <ng-template ng-label-tmp let-item="item">
             <span>{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
@@ -27,7 +27,7 @@
         </ng-template>
       </ng-select>
       <ion-item>
-        <ion-input placeholder="Phone Number" type="tel" [ngModelOptions]="{standalone: true}" [(ngModel)]="phoneNumber" required></ion-input>
+        <ion-input placeholder="Phone Number" type="tel" [(ngModel)]="phoneNumber" formControlName="phone" required></ion-input>
       </ion-item>
       <ion-button shape="round" color="primary" type="submit"><ion-icon name="person-circle-outline"></ion-icon>Login</ion-button>
     </form>
@@ -38,6 +38,9 @@
             <ion-title>
               OTP
             </ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="doRefresh()"><ion-icon name="refresh-outline"></ion-icon></ion-button>
+            </ion-buttons>
           </ion-toolbar>
           <ion-progress-bar *ngIf="isCharging" type="indeterminate"></ion-progress-bar>
         </ion-header>
@@ -45,15 +48,23 @@
         <ion-card>
           <ion-card-header>
             <ion-card-title>An SMS has been sent to</ion-card-title>
-            <ion-card-subtitle>+{{ selectedCountry }} {{ phoneNumber }}</ion-card-subtitle>
+            <ion-card-subtitle>{{ countryCodeEmoji }} +{{ selectedCountry }} {{ phoneNumber }}</ion-card-subtitle>
           </ion-card-header>
         
           <ion-card-content>
-            Enter the OTP code below
+            &#9196; Enter the OTP code below &#9196;
           </ion-card-content>
         </ion-card>
         <ng-otp-input (onInputChange)="onOtpChange($event)" [config]="otpConfig" class="custom-otp-input"></ng-otp-input>
       </ion-content>
+      <ion-footer>
+        <ion-button expand="full" shape="round" color="primary" [disabled]="true" *ngIf="isButtonDisabled">
+          Espera {{ countdown }} segundos
+        </ion-button>
+        <ion-button expand="full" shape="round" color="primary" *ngIf="!isButtonDisabled" (click)="OTPRefreshButton()">
+          Resend OTP
+        </ion-button>
+      </ion-footer>
       </ng-template>
   </ion-modal>
   </div>
