@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { StatusBar } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "@angular/fire/auth";
 import { LoginPage } from "src/app/login/login.page";
 import { Router, RouterModule } from '@angular/router';
+import { Firestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { Router, RouterModule } from '@angular/router';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
+  firestore: Firestore = inject(Firestore);
   auth = getAuth();
   constructor(private router: Router) {
     this.auth.onAuthStateChanged((user) => {

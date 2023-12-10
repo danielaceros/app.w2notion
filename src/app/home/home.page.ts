@@ -3,8 +3,8 @@ import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, RefresherCustomEvent } from '@ionic/angular';
-import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from 'firebase/auth';
-import { DocumentData, addDoc, collection, doc, getDoc, getFirestore, onSnapshot, query, where } from 'firebase/firestore';
+import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from '@angular/fire/auth';
+import { DocumentData, addDoc, collection, doc, getDoc, getFirestore, onSnapshot, query, where } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +13,6 @@ import { DocumentData, addDoc, collection, doc, getDoc, getFirestore, onSnapshot
 })
 export class HomePage {
   auth = getAuth()
-  app = getApp()
   db = getFirestore()
   user: string | undefined;
   username: string | null;
@@ -25,7 +24,6 @@ export class HomePage {
   uid: string | null;
   myForm: FormGroup;
   code: string;
-  db = getFirestore();
   isCharging: boolean = false;
   constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.myForm = this.formBuilder.group({
@@ -55,16 +53,6 @@ export class HomePage {
       }
     })
     
-  }
-  async suscribe(){
-    const payments = getStripePayments(getApp(), {
-      productsCollection: "products",
-      customersCollection: "customers",
-    });
-    const session = await createCheckoutSession(payments, {
-      price: "price_1OKKwfCBeUvmGnFOAI5M5hSk",
-    });
-    window.location.assign(session.url);
   }
   ngOnInit(){
     

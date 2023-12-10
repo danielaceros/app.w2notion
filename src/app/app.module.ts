@@ -6,17 +6,12 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideFirebaseApp } from '@angular/fire/app';
 import { HttpClientModule } from '@angular/common/http';
 import { firebaseConfig } from 'src/config/firebase.config';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgOtpInputModule } from  'ng-otp-input';
-
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 @NgModule({
   declarations: [AppComponent],
