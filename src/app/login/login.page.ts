@@ -10,12 +10,12 @@ import {
   FormBuilder, 
 } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { countries } from 'src/app/countries.module'
 import { countryCodeEmoji, emojiCountryCode } from 'country-code-emoji';
 import { Errors } from "src/app/errors.page"
 import { ViewChildren, ElementRef } from '@angular/core';
 import { otpConfig } from 'src/config/otp.config'
-import { delay } from 'rxjs';
+import { Observable, delay } from 'rxjs';
+import { countries } from 'src/app/countries.module'
 
 type Country = {
   nombre: string;
@@ -25,6 +25,7 @@ type Country = {
   iso3: string;
   phone_code: string;
 };
+
 
 @Component({
   selector: 'app-login',
@@ -41,7 +42,6 @@ export class LoginPage implements OnInit {
   code: string;
   selectedCountry: string = ""; 
   phoneNumber: string = '';
-  countries: Country[] = countries
   results: any;
   data: any;
   isCharging: boolean = false;
@@ -52,6 +52,8 @@ export class LoginPage implements OnInit {
   countryCodeEmoji: string;
   isButtonDisabled: boolean = false;
   countdown: number = 60;
+  countries: Country[] = countries;
+  defaultCountry: Object | any;
   constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController, private router: Router) {
     this.myForm = this.formBuilder.group({
       phone: ['', Validators.compose([Validators.pattern('^[0-9]*$'),  Validators.required])],
@@ -96,8 +98,13 @@ export class LoginPage implements OnInit {
     return item.phone_code.toLocaleLowerCase().indexOf(term) > -1 || item.nombre.toLocaleLowerCase().indexOf(term) > -1;
    }
   getcountryemoji(code: string){
-    this.countryCodeEmoji = countryCodeEmoji(code);
-    return this.countryCodeEmoji;
+    if(code){
+      this.countryCodeEmoji = countryCodeEmoji(code);
+      return this.countryCodeEmoji;
+    }
+    else{
+      return "🌍"
+    }
   }
   ngOnInit() {
     
@@ -105,7 +112,6 @@ export class LoginPage implements OnInit {
   async onSubmit() {
     this.isCharging = true;
     const telefonoCompleto = `+${this.selectedCountry} ${this.phoneNumber}`;
-    console.log(this.selectedCountry)
     this.loginUserWithPhone(telefonoCompleto)
   }
   async presentAlertCodeVerification(number:string) {

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AlertController, LoadingController, RefresherCustomEvent } from '@ionic/angular';
 import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from '@angular/fire/auth';
 import { DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where } from '@angular/fire/firestore';
+import { Errors } from '../errors.page';
 
 @Component({
   selector: 'app-home',
@@ -51,13 +52,10 @@ export class HomePage {
             this.startDate = new Date(doc.data()['current_period_start']['seconds'] * 1000).toDateString()
             this.endDate = new Date(doc.data()['current_period_end']['seconds'] * 1000).toDateString()
             this.stripeLink = doc.data()['stripeLink']
-            console.log(this.subscriptionData)
           } else {
-            console.log('No hay suscripciones activas o en periodo de prueba.');
           }
         });
       } else {
-        console.log("NOT LOGGED")
       }
     })
     
@@ -159,7 +157,6 @@ export class HomePage {
       const user = await signInWithPhoneNumber(this.auth, this.phone!, captcha)
       .then(async (confirmationResult) => {
         this.presentAlertCodeVerification(this.phone!).then( () => {
-          
           confirmationResult.confirm(this.code).then( async (result) => {
             const user = result.user;
             const subscriptionsQuery = query(
@@ -175,15 +172,13 @@ export class HomePage {
               } else {
                 this.presentAlertNotPayed()
               }
-            });
-            
-            
+            });           
           }).catch((error) => {
-            console.log(error)
+            new Errors(this.alertController).showErrors(error.code);
           });
         })
       }).catch((error) => {
-        console.log(error)
+        new Errors(this.alertController).showErrors(error.code);
       });
     }
   }
