@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injectable, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Auth, RecaptchaVerifier, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPhoneNumber, signInWithPopup } from "@angular/fire/auth";
@@ -16,6 +16,7 @@ import { ViewChildren, ElementRef } from '@angular/core';
 import { otpConfig } from 'src/config/otp.config'
 import { Observable, delay } from 'rxjs';
 import { countries } from 'src/app/countries.module'
+import { TranslationService } from 'src/app/translation.module';
 
 type Country = {
   nombre: string;
@@ -31,9 +32,13 @@ type Country = {
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class LoginPage implements OnInit {
+  selectedLanguage: any;
+  originalText:string = "";
+  translatedText: string;
   email: string = "";
   password: string = "";
   auth = getAuth();
@@ -54,7 +59,7 @@ export class LoginPage implements OnInit {
   countdown: number = 60;
   countries: Country[] = countries;
   defaultCountry: Object | any;
-  constructor(public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController, private router: Router) {
+  constructor(private translationService: TranslationService, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController, private router: Router) {
     this.myForm = this.formBuilder.group({
       phone: ['', Validators.compose([Validators.pattern('^[0-9]*$'),  Validators.required])],
     })
@@ -85,6 +90,12 @@ export class LoginPage implements OnInit {
       }, 100); // Intervalo de comprobación cada 100 ms
     });
   }
+  changeLanguage(){
+    this.translationService.setLanguage(this.selectedLanguage)
+  }
+  getCurrentLanguage(): string {
+    return this.translationService.getLanguage();
+  }
   isOtpInputComplete(): boolean {
     if(this.otp.length > 5){
       return true;
@@ -107,7 +118,7 @@ export class LoginPage implements OnInit {
     }
   }
   ngOnInit() {
-    
+    this.selectedLanguage = "en"
   }
   async onSubmit() {
     this.isCharging = true;

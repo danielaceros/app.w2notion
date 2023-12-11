@@ -3,7 +3,20 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [
+      "@angular/localize"
+    ],
+    "paths": {
+      "util": ["node_modules/util"],
+      "stream": ["node_modules/stream-browserify"],
+      "path": ["node_modules/path-browserify"],
+      "querystring": ["node_modules/querystring-es3"],
+      "constants": ["node_modules/constants-browserify"],
+      "https": ["node_modules/https-browserify"],
+      "os": ["node_modules/os-browserify"],
+      "crypto": ["node_modules/crypto-browserify"],
+      "http": ["node_modules/stream-http"],
+    }
   },
   "files": [
     "src/main.ts",

@@ -8,6 +8,7 @@ import { LoginPage } from './login.page';
 import { MaterialModule } from '../material.module';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgOtpInputModule } from 'ng-otp-input';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 
@@ -21,6 +22,7 @@ import { NgOtpInputModule } from 'ng-otp-input';
     MaterialModule,
     NgSelectModule,
     NgOtpInputModule,
+    TranslateModule.forChild()
   ],
   declarations: [LoginPage]
 })

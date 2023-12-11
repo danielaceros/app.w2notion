@@ -1,8 +1,15 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Signup
+      {{ 'signup' | translate }}
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-select  [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
+        <ion-select-option value="en">{{ getcountryemoji('EN') }}</ion-select-option>
+        <ion-select-option value="es">{{ getcountryemoji('ES') }}</ion-select-option>
+        <ion-select-option value="fr">{{ getcountryemoji('FR') }}</ion-select-option>
+      </ion-select>
+    </ion-buttons>
   </ion-toolbar>
   <ion-progress-bar *ngIf="isCharging" type="indeterminate"></ion-progress-bar>
 </ion-header>
@@ -10,7 +17,7 @@
 <ion-content >
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Signup</ion-title>
+      <ion-title size="large"></ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
@@ -20,16 +27,17 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="myForm" class="example-form">
       <ng-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCountry" class="custom" [items]="countries" bindLabel="nombre" bindValue="phone_code" [searchFn]="customSearchFn" clearAllText="Clear"> 
         <ng-template ng-label-tmp let-item="item">
-            <span>{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
+            <span *ngIf="item.nombre == ''">{{ getcountryemoji("") }} {{ 'select' | translate }}</span>
+            <span *ngIf="item.nombre != ''">{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
         </ng-template>
         <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
-              <span>{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
+              <span *ngIf="item.nombre != ''">{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
         </ng-template>
       </ng-select>
       <ion-item>
-        <ion-input placeholder="Phone Number" type="tel" [(ngModel)]="phoneNumber" formControlName="phone" required></ion-input>
+        <ion-input placeholder="{{ 'signup' | translate }}" type="tel" [(ngModel)]="phoneNumber" formControlName="phone" required></ion-input>
       </ion-item>
-      <ion-button shape="round" color="primary" type="submit"><ion-icon name="person-circle-outline"></ion-icon>Login</ion-button>
+      <ion-button shape="round" color="primary" type="submit"><ion-icon name="person-circle-outline"></ion-icon>{{ 'login' | translate }}</ion-button>
     </form>
     <ion-modal [isOpen]="isModalOpen">
       <ng-template>

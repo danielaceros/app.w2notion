@@ -1,8 +1,8 @@
 export const countries = [
     {
-      nombre: "Select your Country",
-      name: "Select your Country",
-      nom: "Select your Country",
+      nombre: "",
+      name: "",
+      nom: "",
       iso2: "",
       iso3: "",
       phone_code: ""
