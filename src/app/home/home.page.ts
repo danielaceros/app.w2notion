@@ -73,7 +73,6 @@ export class HomePage {
         }); 
         getDoc(doc(collection(this.db, "notion"), this.uid!)).then( (data) => {
           this.databases = data.data()!['databasesIds']
-          console.log(this.databases)
         })
       } else {
       }

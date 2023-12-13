@@ -40,7 +40,7 @@
       <ion-card-title>Configura tu W2Notion</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-select (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="Selecciona tu Base de Datos">
+      <ion-select *ngIf="databases" (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="Selecciona tu Base de Datos">
         <ion-select-option *ngFor="let db of databases | keyvalue" [value]="db.value">{{ db.key }}</ion-select-option>
       </ion-select>
   </ion-card-content>
