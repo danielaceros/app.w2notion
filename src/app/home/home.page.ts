@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, RefresherCustomEvent } from '@ionic/angular';
 import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from '@angular/fire/auth';
-import { DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where } from '@angular/fire/firestore';
+import { DocumentReference, DocumentSnapshot, DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where, updateDoc } from '@angular/fire/firestore';
 import { Errors } from '../errors.page';
 import { otpConfig } from 'src/config/otp.config'
 import { CookieService } from 'ngx-cookie-service';
@@ -39,6 +39,11 @@ export class HomePage {
   isOTP6: boolean = false;
   isButtonDisabled: boolean = false;
   countdown: number = 60;
+  databases: [{
+    name: string,
+    id: string
+  }]
+  selectedDatabase: string;
   constructor(private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
@@ -51,7 +56,6 @@ export class HomePage {
         this.uid = user.uid
         document.cookie = "firebaseUUID="+ user.uid+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
         document.cookie = "phone="+user.phoneNumber+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
-        window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
         document.querySelector("ion-progress-bar")
         const subscriptionsQuery = query(
           collection(this.db, 'customers', user.uid!, 'subscriptions'),
@@ -66,9 +70,11 @@ export class HomePage {
             this.stripeLink = doc.data()['stripeLink']
           } else {
           }
-        });
-        
-        window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
+        }); 
+        getDoc(doc(collection(this.db, "notion"), this.uid!)).then( (data) => {
+          this.databases = data.data()!['databasesIds']
+          console.log(this.databases)
+        })
       } else {
       }
     })
@@ -127,6 +133,7 @@ export class HomePage {
     (await loading).present();
   }
   async ngOnInit(){      
+    this.subscriptionData = "klj"
   }
   async payment(){
     this.isCharging = true;
@@ -209,6 +216,10 @@ export class HomePage {
     });
     await alert.present();
   }
+  async changeDefaultDatabase(e:any){
+    updateDoc(doc(collection(this.db, "notion"), this.uid!), {"defaultDatabase":this.selectedDatabase}).then ( () =>{
+    })
+  }
   async connect(){
       const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
       const user = await signInWithPhoneNumber(this.auth, this.phone!, captcha)
@@ -226,6 +237,7 @@ export class HomePage {
             onSnapshot(subscriptionsQuery, (snapshot) => {
               const doc = snapshot.docs[0];
               if (doc) {
+                window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
                 } else {
                 this.presentAlertNotPayed()
               }

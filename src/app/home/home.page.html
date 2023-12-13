@@ -40,10 +40,9 @@
       <ion-card-title>Configura tu W2Notion</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-    <form [formGroup]="myForm">
-    <ion-input formControlName="secret" labelPlacement="floating" [clearInput]="true" placeholder="secret_m01YZ9I4ju7NHC9eG5uTU71e7dqPDktY69fgLyUCVIE" label="Introduce el Notion Secret" type="password" required></ion-input>
-    <ion-input formControlName="dbid" labelPlacement="floating" [clearInput]="true" placeholder="e1bf230611fe4374a37c3561fb686b44" label="Introduce tu DB ID" type="password" required></ion-input>
-    </form>
+      <ion-select (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="Selecciona tu Base de Datos">
+        <ion-select-option *ngFor="let db of databases | keyvalue" [value]="db.value">{{ db.key }}</ion-select-option>
+      </ion-select>
   </ion-card-content>
   </ion-card>
   <ion-button *ngIf="subscriptionData" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>Connect</ion-button>
