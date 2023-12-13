@@ -8,7 +8,6 @@ import { DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, o
 import { Errors } from '../errors.page';
 import { otpConfig } from 'src/config/otp.config'
 import { CookieService } from 'ngx-cookie-service';
-import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs';
 
 @Component({
@@ -40,7 +39,7 @@ export class HomePage {
   isOTP6: boolean = false;
   isButtonDisabled: boolean = false;
   countdown: number = 60;
-  constructor(private socket: Socket, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+  constructor(private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
