@@ -51,6 +51,7 @@ export class HomePage {
         this.uid = user.uid
         document.cookie = "firebaseUUID="+ user.uid+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
         document.cookie = "phone="+user.phoneNumber+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
+        window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
         document.querySelector("ion-progress-bar")
         const subscriptionsQuery = query(
           collection(this.db, 'customers', user.uid!, 'subscriptions'),
@@ -67,7 +68,7 @@ export class HomePage {
           }
         });
         
-        //window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
+        window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
       } else {
       }
     })
