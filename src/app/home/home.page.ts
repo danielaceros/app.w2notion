@@ -133,7 +133,6 @@ export class HomePage {
     (await loading).present();
   }
   async ngOnInit(){      
-    this.subscriptionData = "klj"
   }
   async payment(){
     this.isCharging = true;
