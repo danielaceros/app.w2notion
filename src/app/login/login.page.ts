@@ -32,7 +32,6 @@ type Country = {
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class LoginPage implements OnInit {
@@ -87,7 +86,7 @@ export class LoginPage implements OnInit {
           clearInterval(checkOtpInterval);
           resolve();
         }
-      }, 100); // Intervalo de comprobación cada 100 ms
+      }, 100); 
     });
   }
   changeLanguage(){
@@ -119,6 +118,7 @@ export class LoginPage implements OnInit {
   }
   ngOnInit() {
     this.selectedLanguage = "en"
+    this.auth.useDeviceLanguage();
   }
   async onSubmit() {
     this.isCharging = true;
@@ -196,7 +196,6 @@ export class LoginPage implements OnInit {
           this.isCharging = false;
           const user = result.user;
         }).catch((error) => {
-          this.isModalOpen = false;
           this.isCharging = false;
           new Errors(this.alertController).showErrors(error.code);
         });

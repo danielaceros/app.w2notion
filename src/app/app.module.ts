@@ -14,10 +14,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgOtpInputModule } from  'ng-otp-input';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
+const config: SocketIoConfig = { url: 'https://api.w2notion.es', options: {} };
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,7 +29,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       useFactory: HttpLoaderFactory,
       deps: [HttpClient]
     }
-  }),NgOtpInputModule, BrowserAnimationsModule, HttpClientModule, BrowserModule, IonicModule.forRoot({
+  }),NgOtpInputModule, SocketIoModule.forRoot(config), BrowserAnimationsModule, HttpClientModule, BrowserModule, IonicModule.forRoot({
     innerHTMLTemplatesEnabled: true
   }), AppRoutingModule, provideFirebaseApp(() => initializeApp(firebaseConfig)), provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),

@@ -48,5 +48,41 @@
   </ion-card>
   <ion-button *ngIf="subscriptionData" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>Connect</ion-button>
   <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>Suscribe</ion-button>
+  <ion-modal [isOpen]="isModalOpen">
+    <ng-template>
+      <ion-header [translucent]="true">
+        <ion-toolbar>
+          <ion-title>
+            OTP
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="doRefresh()"><ion-icon name="refresh-outline"></ion-icon></ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <ion-progress-bar *ngIf="isCharging" type="indeterminate"></ion-progress-bar>
+      </ion-header>
+      <ion-content [fullscreen]="true">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>An SMS has been sent to</ion-card-title>
+          <ion-card-subtitle>{{ phone }}</ion-card-subtitle>
+        </ion-card-header>
+      
+        <ion-card-content>
+          &#9196; Enter the OTP code below &#9196;
+        </ion-card-content>
+      </ion-card>
+      <ng-otp-input (onInputChange)="onOtpChange($event)" [config]="otpConfig" class="custom-otp-input"></ng-otp-input>
+    </ion-content>
+    <ion-footer>
+      <ion-button expand="full" shape="round" color="primary" [disabled]="true" *ngIf="isButtonDisabled">
+        Espera {{ countdown }} segundos
+      </ion-button>
+      <ion-button expand="full" shape="round" color="primary" *ngIf="!isButtonDisabled" (click)="OTPRefreshButton()">
+        Resend OTP
+      </ion-button>
+    </ion-footer>
+    </ng-template>
+</ion-modal>
   <div id="recaptcha-container"></div>
 </ion-content>

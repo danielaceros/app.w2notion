@@ -6,6 +6,10 @@ import { AlertController, LoadingController, RefresherCustomEvent } from '@ionic
 import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from '@angular/fire/auth';
 import { DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where } from '@angular/fire/firestore';
 import { Errors } from '../errors.page';
+import { otpConfig } from 'src/config/otp.config'
+import { CookieService } from 'ngx-cookie-service';
+import { Socket } from 'ngx-socket-io';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -30,7 +34,13 @@ export class HomePage {
   startDate: string;
   endDate: string;
   stripeLink: string;
-  constructor(private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+  otpConfig: any = otpConfig;
+  isModalOpen: boolean = false;
+  otp: string = "";
+  isOTP6: boolean = false;
+  isButtonDisabled: boolean = false;
+  countdown: number = 60;
+  constructor(private socket: Socket, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
@@ -40,6 +50,8 @@ export class HomePage {
       if (user) {
         this.phone = user.phoneNumber
         this.uid = user.uid
+        document.cookie = "firebaseUUID="+ user.uid+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
+        document.cookie = "phone="+user.phoneNumber+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
         document.querySelector("ion-progress-bar")
         const subscriptionsQuery = query(
           collection(this.db, 'customers', user.uid!, 'subscriptions'),
@@ -55,10 +67,56 @@ export class HomePage {
           } else {
           }
         });
+        
+        //window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
       } else {
       }
     })
     
+  }
+  async OTPRefreshButton() {
+    this.isButtonDisabled = true;
+    setTimeout(() => {
+      this.isButtonDisabled = false;
+      this.countdown = 60; // Reiniciar el contador
+    }, 60000); // 60 segundos
+    this.startCountdown();
+  }
+  private startCountdown() {
+    const interval = setInterval(() => {
+      this.countdown--;
+
+      if (this.countdown <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000); // Actualizar cada segundo
+  }
+  async onOtpChange(event: any) {
+    this.otp = event;
+  }
+  async checkOTP(){
+    return this.otp.length
+  }
+  async delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+  isOtpInputComplete(): boolean {
+    if(this.otp.length > 5){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  async getOTP(){
+    return new Promise<void>((resolve, reject) => {
+      const checkOtpInterval = setInterval(() => {
+        if (this.isOtpInputComplete()) {
+          clearInterval(checkOtpInterval);
+          resolve();
+        }
+      }, 100); 
+    });
   }
   async onCharge(){
     const loading = this.loadingCtrl.create({
@@ -68,7 +126,7 @@ export class HomePage {
 
     (await loading).present();
   }
-  async ngOnInit(){
+  async ngOnInit(){      
   }
   async payment(){
     this.isCharging = true;
@@ -152,12 +210,14 @@ export class HomePage {
     await alert.present();
   }
   async connect(){
-    if(this.myForm.valid){
       const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
       const user = await signInWithPhoneNumber(this.auth, this.phone!, captcha)
       .then(async (confirmationResult) => {
-        this.presentAlertCodeVerification(this.phone!).then( () => {
-          confirmationResult.confirm(this.code).then( async (result) => {
+        this.isModalOpen = true;
+        this.getOTP().then( () => {
+          this.isModalOpen = false;
+          confirmationResult.confirm(this.otp).then( (result) => {
+            this.isCharging = false;
             const user = result.user;
             const subscriptionsQuery = query(
               collection(this.db, 'customers', user.uid, 'subscriptions'),
@@ -166,26 +226,29 @@ export class HomePage {
             onSnapshot(subscriptionsQuery, (snapshot) => {
               const doc = snapshot.docs[0];
               if (doc) {
-                this.presentAlertPayed()
-                this.http.get("https://api.w2notion.es/v1/connect?whphone="+this.phone!+"&secret="+this.myForm.get("secret")?.value+"&dbid="+this.myForm.get("dbid")?.value).subscribe((data: any) =>{
-              })
-              } else {
+                } else {
                 this.presentAlertNotPayed()
               }
-            });           
+            });  
           }).catch((error) => {
+            this.isCharging = false;
             new Errors(this.alertController).showErrors(error.code);
           });
         })
       }).catch((error) => {
+        this.isModalOpen = false;
+        this.isCharging = false;
         new Errors(this.alertController).showErrors(error.code);
+        
       });
-    }
   }
   handleRefresh(event: { target: { complete: () => void; }; }) {
     window.location.reload();
   }
   signout(){
     this.auth.signOut();
+  }
+  doRefresh() {
+    window.location.reload();
   }
 }
