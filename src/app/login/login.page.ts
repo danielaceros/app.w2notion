@@ -117,7 +117,8 @@ export class LoginPage implements OnInit {
     }
   }
   ngOnInit() {
-    this.selectedLanguage = "en"
+    this.selectedLanguage = navigator.language.substring(0,2) || window.navigator.language.substring(0,2)
+    this.changeLanguage();
     this.auth.useDeviceLanguage();
   }
   async onSubmit() {
@@ -157,13 +158,13 @@ export class LoginPage implements OnInit {
         }).catch((error) => {
           this.isModalOpen = false;
           this.isCharging = false;
-          new Errors(this.alertController).showErrors(error.code);
+          new Errors(this.translationService, this.alertController).showErrors(error.code);
         });
       })
     }).catch((error) => {
       this.isModalOpen = false;
       this.isCharging = false;
-      new Errors(this.alertController).showErrors(error.code);
+      new Errors(this.translationService, this.alertController).showErrors(error.code);
       
     });
   }
@@ -197,17 +198,17 @@ export class LoginPage implements OnInit {
           const user = result.user;
         }).catch((error) => {
           this.isCharging = false;
-          new Errors(this.alertController).showErrors(error.code);
+          new Errors(this.translationService, this.alertController).showErrors(error.code);
         });
       })
     }).catch((error) => {
       this.isModalOpen = false;
       this.isCharging = false;
-      new Errors(this.alertController).showErrors(error.code);
+      new Errors(this.translationService, this.alertController).showErrors(error.code);
       
     });
   }else{
-    new Errors(this.alertController).showErrors("auth/invalid-phone-number")
+    new Errors(this.translationService, this.alertController).showErrors("auth/invalid-phone-number")
   }
 }
   handleRefresh(event: { target: { complete: () => void; }; }) {

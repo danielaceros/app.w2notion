@@ -1,9 +1,18 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      ¡Bienvenido!, {{ phone }}
+      {{ 'welcome' | translate }}, {{ phone }}
     </ion-title>
     <ion-buttons slot="end">
+      <ion-select  [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
+        <ion-select-option value="en">{{ getcountryemoji('GB') }}</ion-select-option>
+        <ion-select-option value="es">{{ getcountryemoji('ES') }}</ion-select-option>
+        <ion-select-option value="fr">{{ getcountryemoji('FR') }}</ion-select-option>
+        <ion-select-option value="de">{{ getcountryemoji('DE') }}</ion-select-option>
+        <ion-select-option value="cn">{{ getcountryemoji('CN') }}</ion-select-option>
+        <ion-select-option value="ru">{{ getcountryemoji('RU') }}</ion-select-option>
+        <ion-select-option value="it">{{ getcountryemoji('IT') }}</ion-select-option>
+      </ion-select>
       <ion-button (click)="signout()"><ion-icon name="exit-outline"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -11,20 +20,12 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
- 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">
-        Inbox
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Tu suscripción, {{ phone }}</ion-card-title>
+      <ion-card-title>{{ 'suscription' | translate }}, {{ phone }}</ion-card-title>
     </ion-card-header>
   <ion-card-content *ngIf="subscriptionData">
     <ion-icon *ngIf="subscriptionData.status == 'active'" name="checkmark-circle"></ion-icon>
@@ -32,21 +33,22 @@
   </ion-card-content>
   <ion-card-content *ngIf="!subscriptionData">
     <ion-icon name="close-circle"></ion-icon>
-    You're not suscribed
+    {{ 'notsuscribed' | translate }}
   </ion-card-content>
   </ion-card>
   <ion-card *ngIf="subscriptionData">
     <ion-card-header>
-      <ion-card-title>Configura tu W2Notion</ion-card-title>
+      <ion-card-title>{{ 'configure' | translate }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-select *ngIf="databases" (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="Selecciona tu Base de Datos">
-        <ion-select-option *ngFor="let db of databases | keyvalue" [value]="db.value">{{ db.key }}</ion-select-option>
+      <ion-select *ngIf="databases" (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="{{ 'database' | translate }}">
+        <ion-select-option *ngFor="let db of databases" [value]="db.id">{{ db.dbname }}</ion-select-option>
       </ion-select>
+      <ion-text *ngIf="urlDatabase"><a [href]="urlDatabase" target="_blank">{{ urlDatabase }}</a></ion-text>
   </ion-card-content>
   </ion-card>
-  <ion-button *ngIf="subscriptionData" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>Connect</ion-button>
-  <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>Suscribe</ion-button>
+  <ion-button *ngIf="subscriptionData" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>{{ 'connect' | translate }}</ion-button>
+  <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>{{ 'suscribe' | translate }}</ion-button>
   <ion-modal [isOpen]="isModalOpen">
     <ng-template>
       <ion-header [translucent]="true">
@@ -63,22 +65,22 @@
       <ion-content [fullscreen]="true">
       <ion-card>
         <ion-card-header>
-          <ion-card-title>An SMS has been sent to</ion-card-title>
+          <ion-card-title>{{ 'sms' | translate }}</ion-card-title>
           <ion-card-subtitle>{{ phone }}</ion-card-subtitle>
         </ion-card-header>
       
         <ion-card-content>
-          &#9196; Enter the OTP code below &#9196;
+          &#9196; {{ 'otp' | translate }} &#9196;
         </ion-card-content>
       </ion-card>
       <ng-otp-input (onInputChange)="onOtpChange($event)" [config]="otpConfig" class="custom-otp-input"></ng-otp-input>
     </ion-content>
     <ion-footer>
       <ion-button expand="full" shape="round" color="primary" [disabled]="true" *ngIf="isButtonDisabled">
-        Espera {{ countdown }} segundos
+        {{ 'wait' | translate }} {{ countdown }} {{ 'seconds' | translate }}
       </ion-button>
       <ion-button expand="full" shape="round" color="primary" *ngIf="!isButtonDisabled" (click)="OTPRefreshButton()">
-        Resend OTP
+        {{ 'reotp' | translate }}
       </ion-button>
     </ion-footer>
     </ng-template>

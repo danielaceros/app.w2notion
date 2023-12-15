@@ -9,6 +9,8 @@ import { Errors } from '../errors.page';
 import { otpConfig } from 'src/config/otp.config'
 import { CookieService } from 'ngx-cookie-service';
 import { map } from 'rxjs';
+import { TranslationService } from '../translation.module';
+import countryCodeEmoji from 'country-code-emoji';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +20,7 @@ import { map } from 'rxjs';
 export class HomePage {
   auth = getAuth()
   db = getFirestore()
+  selectedLanguage: any;
   user: string | undefined;
   username: string | null;
   email: string | null;
@@ -40,11 +43,14 @@ export class HomePage {
   isButtonDisabled: boolean = false;
   countdown: number = 60;
   databases: [{
-    name: string,
-    id: string
+    id: string,
+    dbname: string,
+    url: string
   }]
   selectedDatabase: string;
-  constructor(private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+  urlDatabase: string;
+  countryCodeEmoji: string;
+  constructor(private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
@@ -54,7 +60,7 @@ export class HomePage {
       if (user) {
         this.phone = user.phoneNumber
         this.uid = user.uid
-        document.cookie = "firebaseUUID="+ user.uid+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
+        document.cookie = "firebaseUUID="+user.uid+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
         document.cookie = "phone="+user.phoneNumber+ "; domain=.w2notion.es; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT"
         document.querySelector("ion-progress-bar")
         const subscriptionsQuery = query(
@@ -65,19 +71,36 @@ export class HomePage {
           const doc = snapshot.docs[0];
           if (doc) {
             this.subscriptionData = doc.data();
-            this.startDate = new Date(doc.data()['current_period_start']['seconds'] * 1000).toDateString()
-            this.endDate = new Date(doc.data()['current_period_end']['seconds'] * 1000).toDateString()
+            this.startDate = new Date(doc.data()['current_period_start']['seconds'] * 1000).toLocaleDateString()
+            this.endDate = new Date(doc.data()['current_period_end']['seconds'] * 1000).toLocaleDateString()
             this.stripeLink = doc.data()['stripeLink']
           } else {
           }
         }); 
         getDoc(doc(collection(this.db, "notion"), this.uid!)).then( (data) => {
           this.databases = data.data()!['databasesIds']
+          this.selectedDatabase = data.data()!['defaultDatabase']
+          this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.replace(/-/g, '')
         })
       } else {
       }
     })
     
+  }
+  getcountryemoji(code: string){
+    if(code){
+      this.countryCodeEmoji = countryCodeEmoji(code);
+      return this.countryCodeEmoji;
+    }
+    else{
+      return "🌍"
+    }
+  }
+  changeLanguage(){
+    this.translationService.setLanguage(this.selectedLanguage)
+  }
+  getCurrentLanguage(): string {
+    return this.translationService.getLanguage();
   }
   async OTPRefreshButton() {
     this.isButtonDisabled = true;
@@ -131,7 +154,10 @@ export class HomePage {
 
     (await loading).present();
   }
-  async ngOnInit(){      
+  async ngOnInit(){    
+    this.selectedLanguage = navigator.language.substring(0,2) || window.navigator.language.substring(0,2)
+    this.changeLanguage();
+    this.auth.useDeviceLanguage();
   }
   async payment(){
     this.isCharging = true;
@@ -217,6 +243,7 @@ export class HomePage {
   async changeDefaultDatabase(e:any){
     updateDoc(doc(collection(this.db, "notion"), this.uid!), {"defaultDatabase":this.selectedDatabase}).then ( () =>{
     })
+    this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.replace(/-/g, '')
   }
   async connect(){
       const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
@@ -242,13 +269,13 @@ export class HomePage {
             });  
           }).catch((error) => {
             this.isCharging = false;
-            new Errors(this.alertController).showErrors(error.code);
+            new Errors(this.translationService, this.alertController).showErrors(error.code);
           });
         })
       }).catch((error) => {
         this.isModalOpen = false;
         this.isCharging = false;
-        new Errors(this.alertController).showErrors(error.code);
+        new Errors(this.translationService, this.alertController).showErrors(error.code);
         
       });
   }

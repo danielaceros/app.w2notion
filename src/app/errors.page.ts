@@ -1,8 +1,9 @@
 import { AlertController } from "@ionic/angular";
+import { TranslationService } from "./translation.module";
 
 export class Errors{
-  constructor(private alertController: AlertController){}
-  async presentAlertFirebaseError(errorMessage: string) {
+  constructor(private translationService: TranslationService, private alertController: AlertController){}
+  async presentAlertFirebaseError(errorMessage: any) {
     const alert = await this.alertController.create({
       header: 'Error',
       message: errorMessage,
@@ -20,56 +21,56 @@ export class Errors{
   showErrors(errorcode: string){
         switch (errorcode) {
           case 'auth/invalid-email':
-            this.presentAlertFirebaseError('Invalid email address.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/invalid-email"));
             break;
           case 'auth/user-disabled':
-            this.presentAlertFirebaseError('The user account has been disabled.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/invalid-email"));
             break;
           case 'auth/user-not-found':
-            this.presentAlertFirebaseError('User not found. Please check the email address.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/user-not-found"));
             break;
           case 'auth/wrong-password':
-            this.presentAlertFirebaseError('Incorrect password. Please try again.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/wrong-password"));
             break;
           case 'auth/email-already-in-use':
-            this.presentAlertFirebaseError('The email address is already in use by another account.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/email-already-in-use"));
             break;
           case 'auth/invalid-action-code':
           case 'auth/invalid-phone-number':
-            this.presentAlertFirebaseError('The number phone is invalid. Please try again');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/invalid-phone-number"));
             break;
           case 'auth/expired-action-code':
-            this.presentAlertFirebaseError('The action code is invalid or has expired. Please request a new one.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/expired-action-code"));
             break;
           case 'auth/invalid-continue-uri':
-            this.presentAlertFirebaseError('The continue URL provided in the request is invalid.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/invalid-continue-uri"));
             break;
           case 'auth/missing-continue-uri':
-            this.presentAlertFirebaseError('The continue URL must be provided in the request.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/missing-continue-uri"));
             break;
           case 'auth/invalid-verification-code':
-            this.presentAlertFirebaseError('Invalid verification code.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/invalid-verification-code"));
             break;
           case 'auth/invalid-verification-id':
-            this.presentAlertFirebaseError('Invalid verification ID.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/invalid-verification-id"));
             break;
           case 'auth/missing-verification-code':
-            this.presentAlertFirebaseError('Missing verification code.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/missing-verification-code"));
             break;
           case 'auth/network-request-failed':
-            this.presentAlertFirebaseError('Network request failed. Please check your internet connection.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/network-request-failed"));
             break;
           case 'auth/too-many-requests':
-            this.presentAlertFirebaseError('Too many unsuccessful login attempts. Please try again later.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/too-many-requests"));
             break;
           case 'auth/unauthorized-continue-uri':
-            this.presentAlertFirebaseError('The domain of the continue URL is not whitelisted.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/unauthorized-continue-uri"));
             break;
           case 'auth/weak-password':
-            this.presentAlertFirebaseError('The password is too weak. Please choose a stronger password.');
+            this.presentAlertFirebaseError(this.translationService.translateString("auth/weak-password"));
             break;
           default:
-            this.presentAlertFirebaseError('An unexpected error occurred. Please try again later.');
+            this.presentAlertFirebaseError(this.translationService.translateString("default"));
             break;
       }
     }
