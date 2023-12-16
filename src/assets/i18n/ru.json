@@ -8,6 +8,7 @@
     "configure": "Настройте ваш W2Notion",
     "database": "Выберите вашу базу данных",
     "connect": "Подключение",
+    "reconnect": "Переподключить",
     "notsuscribed": "Вы не подписаны",
     "suscribe": "Подписаться",
     "sms": "SMS отправлено на",

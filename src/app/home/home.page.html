@@ -41,13 +41,14 @@
       <ion-card-title>{{ 'configure' | translate }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-select *ngIf="databases" (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="{{ 'database' | translate }}">
-        <ion-select-option *ngFor="let db of databases" [value]="db.id">{{ db.dbname }}</ion-select-option>
+      <ion-select *ngIf="databases" [compareWith]="compareObjects" (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="{{ 'database' | translate }}">
+        <ion-select-option *ngFor="let db of databases" [value]="{ dbname: db.dbname, id: db.id, url: db.url }">{{ db.dbname }}</ion-select-option>
       </ion-select>
       <ion-text *ngIf="urlDatabase"><a [href]="urlDatabase" target="_blank">{{ urlDatabase }}</a></ion-text>
   </ion-card-content>
   </ion-card>
-  <ion-button *ngIf="subscriptionData" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>{{ 'connect' | translate }}</ion-button>
+  <ion-button *ngIf="subscriptionData && !databases" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>{{ 'connect' | translate }}</ion-button>
+  <ion-button *ngIf="subscriptionData && databases" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>{{ 'reconnect' | translate }}</ion-button>
   <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>{{ 'suscribe' | translate }}</ion-button>
   <ion-modal [isOpen]="isModalOpen">
     <ng-template>

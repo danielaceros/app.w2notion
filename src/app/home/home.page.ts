@@ -47,7 +47,11 @@ export class HomePage {
     dbname: string,
     url: string
   }]
-  selectedDatabase: string;
+  selectedDatabase: {
+    dbname: string, 
+    id: string,
+    url: string
+  };
   urlDatabase: string;
   countryCodeEmoji: string;
   constructor(private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
@@ -80,7 +84,7 @@ export class HomePage {
         getDoc(doc(collection(this.db, "notion"), this.uid!)).then( (data) => {
           this.databases = data.data()!['databasesIds']
           this.selectedDatabase = data.data()!['defaultDatabase']
-          this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.replace(/-/g, '')
+          this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.id.replace(/-/g, '')
         })
       } else {
       }
@@ -95,6 +99,9 @@ export class HomePage {
     else{
       return "🌍"
     }
+  }
+  compareObjects(option1: any, option2: any): boolean {
+    return option1 && option2 ? option1.id === option2.id : option1 === option2;
   }
   changeLanguage(){
     this.translationService.setLanguage(this.selectedLanguage)
@@ -241,9 +248,13 @@ export class HomePage {
     await alert.present();
   }
   async changeDefaultDatabase(e:any){
-    updateDoc(doc(collection(this.db, "notion"), this.uid!), {"defaultDatabase":this.selectedDatabase}).then ( () =>{
+    updateDoc(doc(collection(this.db, "notion"), this.uid!), {"defaultDatabase":{
+      "dbname":this.selectedDatabase.dbname,
+      "id":this.selectedDatabase.id,
+      "url":this.selectedDatabase.url
+    }}).then ( () =>{
     })
-    this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.replace(/-/g, '')
+    this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.id.replace(/-/g, '')
   }
   async connect(){
       const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})

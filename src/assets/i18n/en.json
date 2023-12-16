@@ -8,6 +8,7 @@
     "configure":"Configure your W2Notion",
     "database":"Select your database",
     "connect":"Connect",
+    "reconnect":"Reconnect",
     "notsuscribed":"You're not suscribed",
     "suscribe":"Suscribe",
     "sms":"An SMS has been sent to",

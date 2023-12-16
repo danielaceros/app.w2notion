@@ -8,6 +8,7 @@
     "configure": "配置你的 W2Notion",
     "database": "选择你的数据库",
     "connect": "连接",
+    "reconnect": "重新连接",
     "notsuscribed": "你还未订阅",
     "suscribe": "订阅",
     "sms": "已发送短信至",
