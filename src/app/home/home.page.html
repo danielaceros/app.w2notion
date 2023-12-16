@@ -25,12 +25,14 @@
   </ion-refresher>
   <ion-card>
     <ion-card-header>
-      <ion-card-title>{{ 'suscription' | translate }}, {{ phone }}</ion-card-title>
+      <ion-card-title>{{ 'suscription' | translate }}, {{ phone }}
+      </ion-card-title>
     </ion-card-header>
   <ion-card-content *ngIf="subscriptionData">
     <ion-icon *ngIf="subscriptionData.status == 'active'" name="checkmark-circle"></ion-icon>
     {{ startDate }} - {{ endDate }}<br>
   </ion-card-content>
+  <ion-button *ngIf="subscriptionData && databases" shape="round" expand="full" href="https://billing.stripe.com/p/login/test_dR61742Q87zz7f2288"><ion-icon name="person"></ion-icon>{{ 'mysuscription' | translate }}</ion-button>
   <ion-card-content *ngIf="!subscriptionData">
     <ion-icon name="close-circle"></ion-icon>
     {{ 'notsuscribed' | translate }}
@@ -46,9 +48,9 @@
       </ion-select>
       <ion-text *ngIf="urlDatabase"><a [href]="urlDatabase" target="_blank">{{ urlDatabase }}</a></ion-text>
   </ion-card-content>
-  </ion-card>
   <ion-button *ngIf="subscriptionData && !databases" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>{{ 'connect' | translate }}</ion-button>
   <ion-button *ngIf="subscriptionData && databases" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>{{ 'reconnect' | translate }}</ion-button>
+  </ion-card>
   <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>{{ 'suscribe' | translate }}</ion-button>
   <ion-modal [isOpen]="isModalOpen">
     <ng-template>

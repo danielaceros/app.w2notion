@@ -155,8 +155,10 @@ export class HomePage {
   }
   async onCharge(){
     const loading = this.loadingCtrl.create({
-      message: 'Setting everithing up...',
       duration: 1000,
+      spinner: "lines-small",
+      animated: true,
+      showBackdrop: true
     });
 
     (await loading).present();

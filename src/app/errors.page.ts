@@ -1,5 +1,5 @@
 import { AlertController } from "@ionic/angular";
-import { TranslationService } from "./translation.module";
+import { TranslationService } from "src/app/translation.module";
 
 export class Errors{
   constructor(private translationService: TranslationService, private alertController: AlertController){}
