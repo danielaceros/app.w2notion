@@ -20,6 +20,7 @@ import countryCodeEmoji from 'country-code-emoji';
 export class HomePage {
   auth = getAuth()
   db = getFirestore()
+  chrome: any;
   selectedLanguage: any;
   user: string | undefined;
   username: string | null;

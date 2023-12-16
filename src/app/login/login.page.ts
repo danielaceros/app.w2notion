@@ -155,13 +155,15 @@ export class LoginPage implements OnInit {
         confirmationResult.confirm(this.otp).then( (result) => {
           this.isCharging = false;
           const user = result.user;
-        }).catch((error) => {
+        }).catch((error:any) => {
+          console.log(error)
           this.isModalOpen = false;
           this.isCharging = false;
           new Errors(this.translationService, this.alertController).showErrors(error.code);
         });
       })
-    }).catch((error) => {
+    }).catch((error:any) => {
+      console.log(error)
       this.isModalOpen = false;
       this.isCharging = false;
       new Errors(this.translationService, this.alertController).showErrors(error.code);
@@ -196,12 +198,14 @@ export class LoginPage implements OnInit {
         confirmationResult.confirm(this.otp).then( (result) => {
           this.isCharging = false;
           const user = result.user;
-        }).catch((error) => {
+        }).catch((error:any) => {
+          console.log(error)
           this.isCharging = false;
           new Errors(this.translationService, this.alertController).showErrors(error.code);
         });
       })
-    }).catch((error) => {
+    }).catch((error:any) => {
+      console.log(error)
       this.isModalOpen = false;
       this.isCharging = false;
       new Errors(this.translationService, this.alertController).showErrors(error.code);

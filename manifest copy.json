@@ -1,0 +1,22 @@
+{
+    "name": "W2Notion",
+    "version": "1.0",
+    "description": "Build an Extension with Angular",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "index.html"
+    },
+    "icons": {
+        "128": "assets/icon/favicon.png"
+    },
+    "background": {
+        "persistent": false,
+        "page": "background.html"
+      },
+    "content_security_policy": {
+        "extension-pages":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com; object-src 'self'"
+    },
+    "permissions": [
+        "storage"
+      ]
+}
