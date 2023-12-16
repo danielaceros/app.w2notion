@@ -291,12 +291,12 @@ export class HomePage {
       });
   }
   handleRefresh(event: { target: { complete: () => void; }; }) {
-    window.location.reload();
+    window.location.href = "https://app.w2notion.es";
   }
   signout(){
     this.auth.signOut();
   }
   doRefresh() {
-    window.location.reload();
+    window.location.href = "https://app.w2notion.es";
   }
 }
