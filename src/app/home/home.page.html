@@ -32,7 +32,7 @@
     <ion-icon *ngIf="subscriptionData.status == 'active'" name="checkmark-circle"></ion-icon>
     {{ startDate }} - {{ endDate }}<br>
   </ion-card-content>
-  <ion-button *ngIf="subscriptionData && databases" shape="round" expand="full" href="https://billing.stripe.com/p/login/test_dR61742Q87zz7f2288"><ion-icon name="person"></ion-icon>{{ 'mysuscription' | translate }}</ion-button>
+  <ion-button *ngIf="subscriptionData && databases" shape="round" expand="full" (click)="suscription()"><ion-icon name="person"></ion-icon>{{ 'mysuscription' | translate }}</ion-button>
   <ion-card-content *ngIf="!subscriptionData">
     <ion-icon name="close-circle"></ion-icon>
     {{ 'notsuscribed' | translate }}

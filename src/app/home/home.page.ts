@@ -56,7 +56,7 @@ export class HomePage {
   };
   urlDatabase: string;
   countryCodeEmoji: string;
-  constructor(private location: Location, private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+  constructor(private router: Router, private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
@@ -260,6 +260,9 @@ export class HomePage {
     })
     this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.id.replace(/-/g, '')
   }
+  async suscription(){
+    window.open("https://billing.stripe.com/p/login/test_dR61742Q87zz7f2288", "_blank")
+  }
   async connect(){
       const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
       const user = await signInWithPhoneNumber(this.auth, this.phone!, captcha)
@@ -295,12 +298,12 @@ export class HomePage {
       });
   }
   handleRefresh(event: { target: { complete: () => void; }; }) {
-    window.location.reload();
+    this.router.navigate([''])
   }
   signout(){
     this.auth.signOut();
   }
   doRefresh() {
-    window.location.reload();
+    this.router.navigate([''])
   }
 }
