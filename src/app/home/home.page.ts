@@ -11,6 +11,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { map } from 'rxjs';
 import { TranslationService } from '../translation.module';
 import countryCodeEmoji from 'country-code-emoji';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -55,7 +56,7 @@ export class HomePage {
   };
   urlDatabase: string;
   countryCodeEmoji: string;
-  constructor(private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+  constructor(private location: Location, private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
@@ -190,7 +191,7 @@ export class HomePage {
         }
     
         if (url) {
-          window.location.assign(url);
+          window.open(url, "_blank")
         }
       }
     });
@@ -276,7 +277,7 @@ export class HomePage {
             onSnapshot(subscriptionsQuery, (snapshot) => {
               const doc = snapshot.docs[0];
               if (doc) {
-                window.location.assign("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth")
+                window.open("https://api.notion.com/v1/oauth/authorize?client_id=a7c99919-e68a-4309-8f28-fccf4948be22&response_type=code&owner=user&redirect_uri=https%3A%2F%2Fapi.w2notion.es%2Fv1%2Foauth", "_blank")
                 } else {
                 this.presentAlertNotPayed()
               }
@@ -294,12 +295,12 @@ export class HomePage {
       });
   }
   handleRefresh(event: { target: { complete: () => void; }; }) {
-    window.location.href = "https://app.w2notion.es";
+    window.location.reload();
   }
   signout(){
     this.auth.signOut();
   }
   doRefresh() {
-    window.location.href = "https://app.w2notion.es";
+    window.location.reload();
   }
 }
