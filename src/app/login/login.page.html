@@ -3,6 +3,9 @@
     <ion-title>
       {{ 'signup' | translate }}
     </ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="reportbug()"><ion-icon name="bug"></ion-icon></ion-button>
+    </ion-buttons>
     <ion-buttons slot="end">
       <ion-select  [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
         <ion-select-option value="en">{{ getcountryemoji('GB') }}</ion-select-option>
@@ -18,7 +21,7 @@
   <ion-progress-bar *ngIf="isCharging" type="indeterminate"></ion-progress-bar>
 </ion-header>
 
-<ion-content >
+<ion-content>
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large"></ion-title>
@@ -44,9 +47,13 @@
       <ion-button shape="round" color="primary" type="submit"><ion-icon name="person-circle-outline"></ion-icon>{{ 'login' | translate }}</ion-button>
     </form>
     <ion-modal [isOpen]="isModalOpen">
+      
       <ng-template>
         <ion-header [translucent]="true">
           <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button (click)="reportbug()"><ion-icon name="bug"></ion-icon></ion-button>
+            </ion-buttons>
             <ion-title>
               OTP
             </ion-title>

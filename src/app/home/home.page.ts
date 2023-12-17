@@ -263,6 +263,9 @@ export class HomePage {
   async suscription(){
     window.open("https://billing.stripe.com/p/login/test_dR61742Q87zz7f2288", "_blank")
   }
+  async reportbug(){
+    window.open("https://forms.gle/dJAufJjYbn7R9Ny19", "_blank")
+  }
   async connect(){
       const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
       const user = await signInWithPhoneNumber(this.auth, this.phone!, captcha)

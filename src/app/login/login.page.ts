@@ -214,7 +214,10 @@ export class LoginPage implements OnInit {
   }else{
     new Errors(this.translationService, this.alertController).showErrors("auth/invalid-phone-number")
   }
-}
+  }
+  async reportbug(){
+    window.open("https://forms.gle/dJAufJjYbn7R9Ny19", "_blank")
+  }
   handleRefresh(event: { target: { complete: () => void; }; }) {
     window.location.reload();
   }

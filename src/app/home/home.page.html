@@ -3,6 +3,9 @@
     <ion-title>
       {{ 'welcome' | translate }}, {{ phone }}
     </ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="reportbug()"><ion-icon name="bug"></ion-icon></ion-button>
+    </ion-buttons>
     <ion-buttons slot="end">
       <ion-select  [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
         <ion-select-option value="en">{{ getcountryemoji('GB') }}</ion-select-option>
