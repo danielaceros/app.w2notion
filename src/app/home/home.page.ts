@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController, RefresherCustomEvent } from '@ionic/angular';
+import { AlertController, InfiniteScrollCustomEvent, LoadingController, RefresherCustomEvent } from '@ionic/angular';
 import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from '@angular/fire/auth';
 import { DocumentReference, DocumentSnapshot, DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where, updateDoc } from '@angular/fire/firestore';
 import { Errors } from '../errors.page';
@@ -56,6 +56,12 @@ export class HomePage {
   };
   urlDatabase: string;
   countryCodeEmoji: string;
+  messages: [{
+    task: string,
+    timestamp: number,
+    url:string
+  }]
+  lastUpdate: string = ""
   constructor(private router: Router, private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
@@ -87,11 +93,32 @@ export class HomePage {
           this.databases = data.data()!['databasesIds']
           this.selectedDatabase = data.data()!['defaultDatabase']
           this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.id.replace(/-/g, '')
+          this.messages = data.data()!['messages']
+          this.lastUpdate = new Date().toLocaleDateString() +" "+ new Date().toLocaleTimeString()
         })
       } else {
       }
     })
     
+  }
+  formatTimestamp(timestamp: number): string {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString()+" "+date.toLocaleTimeString() // Customize the format string as needed
+  }
+  getData(){
+    getDoc(doc(collection(this.db, "notion"), this.uid!)).then( (data) => {
+      this.databases = data.data()!['databasesIds']
+      this.selectedDatabase = data.data()!['defaultDatabase']
+      this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.id.replace(/-/g, '')
+      this.messages = data.data()!['messages']
+    })
+    this.lastUpdate = new Date().toLocaleDateString() +" "+ new Date().toLocaleTimeString()
+  }
+  onIonInfinite(ev: InfiniteScrollCustomEvent) {
+    this.getData();
+    setTimeout(() => {
+      (ev as InfiniteScrollCustomEvent).target.complete();
+    }, 500);
   }
   getcountryemoji(code: string){
     if(code){
@@ -290,13 +317,13 @@ export class HomePage {
             });  
           }).catch((error) => {
             this.isCharging = false;
-            new Errors(this.translationService, this.alertController).showErrors(error.code);
+            new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
           });
         })
       }).catch((error) => {
         this.isModalOpen = false;
         this.isCharging = false;
-        new Errors(this.translationService, this.alertController).showErrors(error.code);
+        new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
         
       });
   }

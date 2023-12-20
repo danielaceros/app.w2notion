@@ -159,14 +159,14 @@ export class LoginPage implements OnInit {
           console.log(error)
           this.isModalOpen = false;
           this.isCharging = false;
-          new Errors(this.translationService, this.alertController).showErrors(error.code);
+          new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
         });
       })
     }).catch((error:any) => {
       console.log(error)
       this.isModalOpen = false;
       this.isCharging = false;
-      new Errors(this.translationService, this.alertController).showErrors(error.code);
+      new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
       
     });
   }
@@ -201,27 +201,27 @@ export class LoginPage implements OnInit {
         }).catch((error:any) => {
           console.log(error)
           this.isCharging = false;
-          new Errors(this.translationService, this.alertController).showErrors(error.code);
+          new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
         });
       })
     }).catch((error:any) => {
       console.log(error)
       this.isModalOpen = false;
       this.isCharging = false;
-      new Errors(this.translationService, this.alertController).showErrors(error.code);
+      new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
       
     });
   }else{
-    new Errors(this.translationService, this.alertController).showErrors("auth/invalid-phone-number")
+    new Errors(this.router, this.translationService, this.alertController).showErrors("auth/invalid-phone-number")
   }
   }
   async reportbug(){
     window.open("https://forms.gle/dJAufJjYbn7R9Ny19", "_blank")
   }
   handleRefresh(event: { target: { complete: () => void; }; }) {
-    window.location.reload();
+    this.router.navigate([''])
   }
   doRefresh() {
-    window.location.reload();
+    this.router.navigate([''])
   }
 }

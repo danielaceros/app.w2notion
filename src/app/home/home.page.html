@@ -28,7 +28,7 @@
   </ion-refresher>
   <ion-card>
     <ion-card-header>
-      <ion-card-title>{{ 'suscription' | translate }}, {{ phone }}
+      <ion-card-title>💳 {{ 'suscription' | translate }}, {{ phone }}
       </ion-card-title>
     </ion-card-header>
   <ion-card-content *ngIf="subscriptionData">
@@ -43,7 +43,7 @@
   </ion-card>
   <ion-card *ngIf="subscriptionData">
     <ion-card-header>
-      <ion-card-title>{{ 'configure' | translate }}</ion-card-title>
+      <ion-card-title>⚙️ {{ 'configure' | translate }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-select *ngIf="databases" [compareWith]="compareObjects" (ionChange)="changeDefaultDatabase($event)" [(ngModel)]="selectedDatabase" label="{{ 'database' | translate }}">
@@ -55,6 +55,23 @@
   <ion-button *ngIf="subscriptionData && databases" shape="round" expand="full" (click)="connect()"><ion-icon name="checkmark-done-outline"></ion-icon>{{ 'reconnect' | translate }}</ion-button>
   </ion-card>
   <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>{{ 'suscribe' | translate }}</ion-button>
+  <ion-card *ngIf="messages">
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-label>{{ lastUpdate }}</ion-label>
+        <ion-button *ngIf="messages" shape="round" (click)="getData()"><ion-icon name="refresh-outline"></ion-icon></ion-button>
+      </ion-buttons>
+      <ion-title>📋 History</ion-title>
+    </ion-toolbar>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let msg of messages">
+          <ion-text>🟢 {{ formatTimestamp(msg.timestamp) }} - {{ msg.task }}<br><a href="{{ msg.url }}">{{ msg.url }}</a></ion-text>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+    
+  </ion-card>
   <ion-modal [isOpen]="isModalOpen">
     <ng-template>
       <ion-header [translucent]="true">

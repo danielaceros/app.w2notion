@@ -1,8 +1,9 @@
+import { Router } from "@angular/router";
 import { AlertController } from "@ionic/angular";
 import { TranslationService } from "src/app/translation.module";
 
 export class Errors{
-  constructor(private translationService: TranslationService, private alertController: AlertController){}
+  constructor(private router: Router, private translationService: TranslationService, private alertController: AlertController){}
   async presentAlertFirebaseError(errorMessage: any) {
     const alert = await this.alertController.create({
       header: 'Error',
@@ -11,7 +12,7 @@ export class Errors{
         {
           text: 'OK',
           handler: () => {
-            window.location.reload();
+            this.router.navigate([''])
           },
         },
       ],
