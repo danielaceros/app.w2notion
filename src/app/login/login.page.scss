@@ -54,7 +54,10 @@ ion-button{
   margin-right: 8%;
   margin-bottom: 2%;
 }
-
+::ng-deep .mycomponent-wider-popover
+{
+  --width: 25%;
+}
 
 /* telefono-formulario.component.css */
 // tu-componente.page.scss

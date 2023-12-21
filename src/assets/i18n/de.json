@@ -16,6 +16,8 @@
     "sms": "Eine SMS wurde gesendet an",
     "otp": "Geben Sie den OTP-Code unten ein",
     "wait": "Warten",
+    "history":"Aufzeichnen",
+    "error": "Fehler",
     "seconds": "Sekunden",
     "reotp": "OTP erneut senden",
     "auth/invalid-email": "Ungültige E-Mail-Adresse",

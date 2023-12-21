@@ -16,6 +16,8 @@
     "sms": "已发送短信至",
     "otp": "在下方输入 OTP 码",
     "wait": "等待",
+    "error": "错误",
+    "history":"记录",
     "seconds": "秒",
     "reotp": "重新发送 OTP",
     "auth/invalid-email": "无效的电子邮件地址",

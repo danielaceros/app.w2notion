@@ -9,6 +9,8 @@
     "database":"Select your database",
     "connect":"Connect",
     "reconnect":"Reconnect",
+    "history":"History",
+    "error":"Error",
     "mysuscription":"My suscription",
     "setting": "Setting everithing up...",
     "notsuscribed":"You're not suscribed",

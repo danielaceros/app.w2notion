@@ -7,7 +7,7 @@
       <ion-button (click)="reportbug()"><ion-icon name="bug"></ion-icon></ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-select  [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
+      <ion-select [interfaceOptions]="{'cssClass': 'mycomponent-wider-popover'}" [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
         <ion-select-option value="en">{{ getcountryemoji('GB') }}</ion-select-option>
         <ion-select-option value="es">{{ getcountryemoji('ES') }}</ion-select-option>
         <ion-select-option value="fr">{{ getcountryemoji('FR') }}</ion-select-option>
@@ -15,6 +15,13 @@
         <ion-select-option value="cn">{{ getcountryemoji('CN') }}</ion-select-option>
         <ion-select-option value="ru">{{ getcountryemoji('RU') }}</ion-select-option>
         <ion-select-option value="it">{{ getcountryemoji('IT') }}</ion-select-option>
+        <ion-select-option value="in">{{ getcountryemoji('IN') }}</ion-select-option>
+        <ion-select-option value="ar">{{ getcountryemoji('SA') }}</ion-select-option>
+        <ion-select-option value="pt">{{ getcountryemoji('PT') }}</ion-select-option>
+        <ion-select-option value="pk">{{ getcountryemoji('PK') }}</ion-select-option>
+        <ion-select-option value="jp">{{ getcountryemoji('JP') }}</ion-select-option>
+        <ion-select-option value="tr">{{ getcountryemoji('TR') }}</ion-select-option>
+        <ion-select-option value="kr">{{ getcountryemoji('KR') }}</ion-select-option>
       </ion-select>
     </ion-buttons>
   </ion-toolbar>
@@ -32,13 +39,13 @@
   </ion-refresher>
   <div class="telefono-formulario">
     <form (ngSubmit)="onSubmit()" [formGroup]="myForm" class="example-form">
-      <ng-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCountry" class="custom" [items]="countries" bindLabel="nombre" bindValue="phone_code" [searchFn]="customSearchFn" clearAllText="Clear"> 
+      <ng-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedCountry" class="custom" [items]="countries" bindLabel="name" bindValue="phone_code" [searchFn]="customSearchFn" clearAllText="Clear"> 
         <ng-template ng-label-tmp let-item="item">
-            <span *ngIf="item.nombre == ''">{{ getcountryemoji("") }} {{ 'select' | translate }}</span>
-            <span *ngIf="item.nombre != ''">{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
+            <span *ngIf="item.name == ''">{{ getcountryemoji("") }} {{ 'select' | translate }}</span>
+            <span *ngIf="item.name != ''">{{ getcountryemoji(item.iso2) }} {{ item.name + ' (+' + item.phone_code + ')' }}</span>
         </ng-template>
         <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
-              <span *ngIf="item.nombre != ''">{{ getcountryemoji(item.iso2) }} {{ item.nombre + ' (+' + item.phone_code + ')' }}</span>
+              <span *ngIf="item.name != ''">{{ getcountryemoji(item.iso2) }} {{ item.name + ' (+' + item.phone_code + ')' }}</span>
         </ng-template>
       </ng-select>
       <ion-item>

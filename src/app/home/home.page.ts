@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, InfiniteScrollCustomEvent, LoadingController, RefresherCustomEvent } from '@ionic/angular';
+import { AlertController, InfiniteScrollCustomEvent, IonButton, LoadingController, RefresherCustomEvent } from '@ionic/angular';
 import { RecaptchaVerifier, UserMetadata, getAuth, reload, signInWithPhoneNumber } from '@angular/fire/auth';
 import { DocumentReference, DocumentSnapshot, DocumentData, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, where, updateDoc } from '@angular/fire/firestore';
 import { Errors } from '../errors.page';
@@ -12,11 +12,23 @@ import { map } from 'rxjs';
 import { TranslationService } from '../translation.module';
 import countryCodeEmoji from 'country-code-emoji';
 import { Location } from '@angular/common';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Animation, AnimationController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
+  animations: [
+    trigger('buttonClick', [
+      state('clicked', style({
+        transform: 'rotate(360deg)',
+      })),
+      transition('void => clicked', [
+        animate('500ms ease-out'),
+      ]),
+    ]),
+  ],
 })
 export class HomePage {
   auth = getAuth()
@@ -33,6 +45,7 @@ export class HomePage {
   uid: string | null;
   myForm: FormGroup;
   code: string;
+  buttonState = 'unclicked';
   isCharging: boolean = false;
   subscriptionData: Object | any;
   startDate: string;
@@ -59,10 +72,14 @@ export class HomePage {
   messages: [{
     task: string,
     timestamp: number,
-    url:string
+    url: string,
+    status: number
   }]
-  lastUpdate: string = ""
-  constructor(private router: Router, private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
+  lastUpdate: string = "";
+  listmessages: any[] = [];
+  lastVisible: number = 10;
+  captcha: RecaptchaVerifier;
+  constructor(private animationCtrl: AnimationController, private router: Router, private translationService: TranslationService, private cookieService: CookieService, private loadingCtrl: LoadingController, public http: HttpClient, public formBuilder: FormBuilder, private alertController: AlertController) {
     this.onCharge();
     this.myForm = this.formBuilder.group({
       secret: ['', Validators.compose([Validators.minLength(50), Validators.maxLength(50), Validators.required])],
@@ -94,6 +111,7 @@ export class HomePage {
           this.selectedDatabase = data.data()!['defaultDatabase']
           this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.id.replace(/-/g, '')
           this.messages = data.data()!['messages']
+          this.listmessages = this.messages.slice(0, 10)
           this.lastUpdate = new Date().toLocaleDateString() +" "+ new Date().toLocaleTimeString()
         })
       } else {
@@ -111,11 +129,25 @@ export class HomePage {
       this.selectedDatabase = data.data()!['defaultDatabase']
       this.urlDatabase = "https://www.notion.so/"+this.selectedDatabase.id.replace(/-/g, '')
       this.messages = data.data()!['messages']
+      this.listmessages = this.messages.slice(0, 10)
     })
     this.lastUpdate = new Date().toLocaleDateString() +" "+ new Date().toLocaleTimeString()
+    setTimeout(() => {
+      this.buttonState = 'unclicked';
+    }, 200);
+  }
+  getStatusEmoji(emoji: number){
+    if(emoji === 200 || emoji === 300){
+      return "🟢"
+    }
+    else if(emoji === 404){
+      return "🔴"
+    }
+    return ""
   }
   onIonInfinite(ev: InfiniteScrollCustomEvent) {
-    this.getData();
+    this.lastVisible = this.lastVisible + 10
+    this.listmessages = this.messages.slice(0, this.lastVisible)
     setTimeout(() => {
       (ev as InfiniteScrollCustomEvent).target.complete();
     }, 500);
@@ -294,8 +326,8 @@ export class HomePage {
     window.open("https://forms.gle/dJAufJjYbn7R9Ny19", "_blank")
   }
   async connect(){
-      const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
-      const user = await signInWithPhoneNumber(this.auth, this.phone!, captcha)
+      this.captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
+      const user = await signInWithPhoneNumber(this.auth, this.phone!, this.captcha)
       .then(async (confirmationResult) => {
         this.isModalOpen = true;
         this.getOTP().then( () => {
@@ -318,22 +350,24 @@ export class HomePage {
           }).catch((error) => {
             this.isCharging = false;
             new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
+            this.captcha.clear()
           });
         })
       }).catch((error) => {
         this.isModalOpen = false;
         this.isCharging = false;
         new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
+        this.captcha.clear()
         
       });
   }
   handleRefresh(event: { target: { complete: () => void; }; }) {
-    this.router.navigate([''])
+    window.location.reload();
   }
   signout(){
     this.auth.signOut();
   }
   doRefresh() {
-    this.router.navigate([''])
+    window.location.reload();
   }
 }

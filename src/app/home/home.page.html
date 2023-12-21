@@ -7,7 +7,7 @@
       <ion-button (click)="reportbug()"><ion-icon name="bug"></ion-icon></ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-select  [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
+      <ion-select [interfaceOptions]="{'cssClass': 'mycomponent-wider-popover'}" [(ngModel)]="selectedLanguage" (ionChange)="changeLanguage()" aria-label="Language" interface="popover" value="es">
         <ion-select-option value="en">{{ getcountryemoji('GB') }}</ion-select-option>
         <ion-select-option value="es">{{ getcountryemoji('ES') }}</ion-select-option>
         <ion-select-option value="fr">{{ getcountryemoji('FR') }}</ion-select-option>
@@ -15,6 +15,13 @@
         <ion-select-option value="cn">{{ getcountryemoji('CN') }}</ion-select-option>
         <ion-select-option value="ru">{{ getcountryemoji('RU') }}</ion-select-option>
         <ion-select-option value="it">{{ getcountryemoji('IT') }}</ion-select-option>
+        <ion-select-option value="in">{{ getcountryemoji('IN') }}</ion-select-option>
+        <ion-select-option value="ar">{{ getcountryemoji('SA') }}</ion-select-option>
+        <ion-select-option value="pt">{{ getcountryemoji('PT') }}</ion-select-option>
+        <ion-select-option value="pk">{{ getcountryemoji('PK') }}</ion-select-option>
+        <ion-select-option value="jp">{{ getcountryemoji('JP') }}</ion-select-option>
+        <ion-select-option value="tr">{{ getcountryemoji('TR') }}</ion-select-option>
+        <ion-select-option value="kr">{{ getcountryemoji('KR') }}</ion-select-option>
       </ion-select>
       <ion-button (click)="signout()"><ion-icon name="exit-outline"></ion-icon></ion-button>
     </ion-buttons>
@@ -57,18 +64,23 @@
   <ion-button *ngIf="!subscriptionData" color="danger"shape="round" (click)="payment()" expand="full"><ion-icon name="card"></ion-icon>{{ 'suscribe' | translate }}</ion-button>
   <ion-card *ngIf="messages">
     <ion-toolbar>
+      <ion-buttons slot="start">
+      </ion-buttons>
+      <ion-title>📋 {{ 'history' | translate }}</ion-title>
       <ion-buttons slot="end">
         <ion-label>{{ lastUpdate }}</ion-label>
-        <ion-button *ngIf="messages" shape="round" (click)="getData()"><ion-icon name="refresh-outline"></ion-icon></ion-button>
+        <ion-button *ngIf="messages" shape="round" [@buttonClick]="buttonState" (click)="getData()"><ion-icon name="refresh-outline"></ion-icon></ion-button>
       </ion-buttons>
-      <ion-title>📋 History</ion-title>
     </ion-toolbar>
     <ion-card-content>
       <ion-list>
-        <ion-item *ngFor="let msg of messages">
-          <ion-text>🟢 {{ formatTimestamp(msg.timestamp) }} - {{ msg.task }}<br><a href="{{ msg.url }}">{{ msg.url }}</a></ion-text>
+        <ion-item *ngFor="let msg of listmessages">
+          <ion-text>{{ getStatusEmoji(msg.status) }} {{ formatTimestamp(msg.timestamp) }} - {{ msg.task }}<br><a *ngIf="msg.status == 200" href="{{ msg.url }}">{{ msg.url }}</a></ion-text>
         </ion-item>
       </ion-list>
+      <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+        <ion-infinite-scroll-content loadingSpinner="lines-small"></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </ion-card-content>
     
   </ion-card>
@@ -76,6 +88,9 @@
     <ng-template>
       <ion-header [translucent]="true">
         <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="reportbug()"><ion-icon name="bug"></ion-icon></ion-button>
+          </ion-buttons>
           <ion-title>
             OTP
           </ion-title>

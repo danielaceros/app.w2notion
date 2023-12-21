@@ -6,13 +6,13 @@ export class Errors{
   constructor(private router: Router, private translationService: TranslationService, private alertController: AlertController){}
   async presentAlertFirebaseError(errorMessage: any) {
     const alert = await this.alertController.create({
-      header: 'Error',
+      header: this.translationService.translateString("error"),
       message: errorMessage,
       buttons: [
         {
           text: 'OK',
           handler: () => {
-            this.router.navigate([''])
+            window.location.reload();
           },
         },
       ],

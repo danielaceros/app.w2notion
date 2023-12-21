@@ -16,6 +16,8 @@
   "sms": "Se ha enviado un SMS a",
   "otp": "Ingresa el código OTP a continuación",
   "wait": "Espera",
+  "history":"Historial",
+  "error":"Error",
   "seconds": "segundos",
   "reotp": "Reenviar OTP",
   "auth/invalid-email": "Dirección de correo electrónico no válida",

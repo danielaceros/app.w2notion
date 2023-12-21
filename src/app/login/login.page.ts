@@ -146,8 +146,8 @@ export class LoginPage implements OnInit {
     await alert.onDidDismiss();
   }
   async resendOTP(phonenumber: string){
-    const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
-    const user = await signInWithPhoneNumber(this.auth, phonenumber, captcha)
+    this.captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
+    const user = await signInWithPhoneNumber(this.auth, phonenumber, this.captcha)
     .then(async (confirmationResult) => {
       this.isModalOpen = true;
       this.getOTP().then( () => {
@@ -160,6 +160,7 @@ export class LoginPage implements OnInit {
           this.isModalOpen = false;
           this.isCharging = false;
           new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
+          this.captcha.clear()
         });
       })
     }).catch((error:any) => {
@@ -167,6 +168,7 @@ export class LoginPage implements OnInit {
       this.isModalOpen = false;
       this.isCharging = false;
       new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
+      this.captcha.clear()
       
     });
   }
@@ -189,8 +191,8 @@ export class LoginPage implements OnInit {
   }
   async loginUserWithPhone(phonenumber: string){
     if(this.myForm.valid){
-    const captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
-    const user = await signInWithPhoneNumber(this.auth, phonenumber, captcha)
+    this.captcha = new RecaptchaVerifier(this.auth, 'recaptcha-container', {'size': 'invisible'})
+    const user = await signInWithPhoneNumber(this.auth, phonenumber, this.captcha)
     .then(async (confirmationResult) => {
       this.isModalOpen = true;
       this.getOTP().then( () => {
@@ -202,6 +204,7 @@ export class LoginPage implements OnInit {
           console.log(error)
           this.isCharging = false;
           new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
+          this.captcha.clear()
         });
       })
     }).catch((error:any) => {
@@ -209,6 +212,7 @@ export class LoginPage implements OnInit {
       this.isModalOpen = false;
       this.isCharging = false;
       new Errors(this.router, this.translationService, this.alertController).showErrors(error.code);
+      this.captcha.clear()
       
     });
   }else{
@@ -219,9 +223,9 @@ export class LoginPage implements OnInit {
     window.open("https://forms.gle/dJAufJjYbn7R9Ny19", "_blank")
   }
   handleRefresh(event: { target: { complete: () => void; }; }) {
-    this.router.navigate([''])
+    window.location.reload();
   }
   doRefresh() {
-    this.router.navigate([''])
+    window.location.reload();
   }
 }
