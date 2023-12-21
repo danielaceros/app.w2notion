@@ -19,6 +19,7 @@ $RECYCLE.BIN/
 /www
 /platforms
 /plugins
+android
 
 # Compiled output
 /dist
